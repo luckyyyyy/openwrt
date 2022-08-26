@@ -26,6 +26,7 @@ ramips_setup_interfaces()
 	ampedwireless,ally-r1900k|\
 	gehua,ghl-r-001|\
 	hiwifi,hc5962|\
+	netgear,wax202|\
 	xiaomi,mi-router-3-pro|\
 	xiaomi,mi-router-ac2100|\
 	xiaomi,mi-router-cr6606|\
@@ -46,6 +47,7 @@ ramips_setup_interfaces()
 	jcg,q20|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
+	mts,wg430223|\
 	oraybox,x3a|\
 	renkforce,ws-wn530hp3-a|\
 	xiaomi,mi-router-3g|\
@@ -128,9 +130,9 @@ ramips_setup_macs()
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
 	beeline,smartbox-flash)
-		lan_mac=$(mtd_get_mac_ascii u-boot-env eth2macaddr)
-		wan_mac=$(mtd_get_mac_ascii u-boot-env eth3macaddr)
-		label_mac=$lan_mac
+		wan_mac=$(mtd_get_mac_encrypted_arcadyan "board_data")
+		label_mac=$(macaddr_add "$wan_mac" 3)
+		lan_mac=$label_mac
 		;;
 	buffalo,wsr-1166dhp)
 		local index="$(find_mtd_index "board_data")"
@@ -192,6 +194,16 @@ ramips_setup_macs()
 		label_mac=$(cat "/sys/firmware/mikrotik/hard_config/mac_base")
 		wan_mac=$label_mac
 		lan_mac=$(macaddr_add $label_mac 1)
+		;;
+	mts,wg430223)
+		wan_mac=$(mtd_get_mac_encrypted_arcadyan "board_data")
+		label_mac=$wan_mac
+		lan_mac=$(macaddr_add "$wan_mac" 2)
+		;;
+	netgear,wax202)
+		lan_mac=$(mtd_get_mac_ascii Config mac)
+		wan_mac=$(macaddr_add "$lan_mac" 1)
+		label_mac=$lan_mac
 		;;
 	raisecom,msg1500-x-00)
 		lan_mac=$(mtd_get_mac_ascii Config protest_lan_mac)
