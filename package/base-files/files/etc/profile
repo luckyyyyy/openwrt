@@ -39,3 +39,5 @@ in order to prevent unauthorized SSH logins.
 --------------------------------------------------
 EOF
 fi
+alias clash="sh /etc/clash/clash.sh"
+export clashdir="/etc/clash"
