@@ -63,7 +63,7 @@ croncmd(){
 cronset(){
 	# 参数1代表要移除的关键字,参数2代表要添加的任务语句
 	tmpcron=/tmp/cron_$USER
-	croncmd -l > $tmpcron 
+	croncmd -l > $tmpcron
 	sed -i "/$1/d" $tmpcron
 	sed -i '/^$/d' $tmpcron
 	echo "$2" >> $tmpcron
@@ -93,7 +93,7 @@ streaming(){
 	}
 	while [ "$i" != 0 ];do
 		[ "$j" = 60 ] && exit 1
-		sleep 1	
+		sleep 1
 		ns_lookup baidu.com
 		i=$?
 		j=$((j+1))
@@ -123,7 +123,7 @@ autoSSH(){
 	#自动开启SSH
 	[ "$(nvram get ssh_en)" = 0 ] && nvram set ssh_en=1 && nvram commit
     [ "`uci -c /usr/share/xiaoqiang get xiaoqiang_version.version.CHANNEL`" != 'stable' ] && {
-	uci -c /usr/share/xiaoqiang set xiaoqiang_version.version.CHANNEL='stable' 
+	uci -c /usr/share/xiaoqiang set xiaoqiang_version.version.CHANNEL='stable'
     uci -c /usr/share/xiaoqiang commit xiaoqiang_version.version
 	}
 	[ -z "$(pidof dropbear)" -o -z "$(netstat -ntul | grep :22)" ] && {
@@ -429,7 +429,7 @@ EOF
 	rm -f $tmpdir/hosts.yaml
 }
 #设置路由规则
-cn_ip_route(){	
+cn_ip_route(){
 	if [ ! -f $bindir/cn_ip.txt ];then
 		if [ -f $clashdir/cn_ip.txt ];then
 			mv $clashdir/cn_ip.txt $bindir/cn_ip.txt
@@ -508,7 +508,7 @@ start_dns(){
 	iptables -t nat -D PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53 2> /dev/null
 	iptables -t nat -D PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53 2> /dev/null
 	ip6tables -t nat -D PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53 2> /dev/null
-	ip6tables -t nat -D PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53 2> /dev/null	
+	ip6tables -t nat -D PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53 2> /dev/null
 	#设置dns转发
 	iptables -t nat -N clash_dns
 	if [ "$macfilter_type" = "白名单" -a -n "$(cat $clashdir/mac)" ];then
@@ -520,7 +520,7 @@ start_dns(){
 		#mac黑名单
 		for mac in $(cat $clashdir/mac); do
 			iptables -t nat -A clash_dns -m mac --mac-source $mac -j RETURN
-		done	
+		done
 		iptables -t nat -A clash_dns -p udp -j REDIRECT --to $dns_port
 	fi
 	iptables -t nat -I PREROUTING -p udp --dport 53 -j clash_dns
@@ -537,7 +537,7 @@ start_dns(){
 			#mac黑名单
 			for mac in $(cat $clashdir/mac); do
 				ip6tables -t nat -A clashv6_dns -m mac --mac-source $mac -j RETURN
-			done	
+			done
 			ip6tables -t nat -A clashv6_dns -p udp -j REDIRECT --to $dns_port
 		fi
 		ip6tables -t nat -I PREROUTING -p udp --dport 53 -j clashv6_dns
@@ -619,7 +619,7 @@ start_output(){
 start_tun(){
 	if [ "$quic_rj" = 已启用 ];then
 		[ "$dns_mod" = "redir_host" -a "$cn_ip_route" = "已开启" ] && set_cn_ip='-m set ! --match-set cn_ip dst'
-		iptables -I FORWARD -p udp --dport 443 -o utun -m comment --comment "ShellClash QUIC REJECT" $set_cn_ip -j REJECT >/dev/null 2>&1 
+		iptables -I FORWARD -p udp --dport 443 -o utun -m comment --comment "ShellClash QUIC REJECT" $set_cn_ip -j REJECT >/dev/null 2>&1
 	fi
 	iptables -A FORWARD -o utun -j ACCEPT
 	#ip6tables -A FORWARD -o utun -j ACCEPT > /dev/null 2>&1
@@ -662,7 +662,7 @@ stop_iptables(){
 	#重置output规则
 	iptables -t nat -D OUTPUT -p tcp -j clash_out 2> /dev/null
 	iptables -t nat -F clash_out 2> /dev/null
-	iptables -t nat -X clash_out 2> /dev/null	
+	iptables -t nat -X clash_out 2> /dev/null
 	iptables -t nat -D OUTPUT -p udp --dport 53 -j clash_dns_out 2> /dev/null
 	iptables -t nat -F clash_dns_out 2> /dev/null
 	iptables -t nat -X clash_dns_out 2> /dev/null
@@ -703,6 +703,7 @@ stop_iptables(){
 	#移除dnsmasq转发规则
 	[ "$dns_redir" = "已开启" ] && {
 		uci del dhcp.@dnsmasq[-1].server >/dev/null 2>&1
+		uci del dhcp.@dnsmasq[0].cachesize 2>/dev/null
 		uci set dhcp.@dnsmasq[0].noresolv=0 2>/dev/null
 		uci commit dhcp >/dev/null 2>&1
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
@@ -891,6 +892,7 @@ afstart(){
 				uci delete dhcp.@dnsmasq[0].resolvfile 2>/dev/null
 				uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port > /dev/null 2>&1
 				uci set dhcp.@dnsmasq[0].noresolv=1 2>/dev/null
+				uci set dhcp.@dnsmasq[0].cachesize=0 2>/dev/null
 				uci commit dhcp >/dev/null 2>&1
 				/etc/init.d/dnsmasq restart >/dev/null 2>&1
 			fi
@@ -905,7 +907,7 @@ afstart(){
 		#设置本机代理
 		[ "$local_proxy" = "已开启" ] && $0 set_proxy $mix_port $db_port
 		#加载定时任务
-		[ -f $clashdir/cron ] && croncmd $clashdir/cron	
+		[ -f $clashdir/cron ] && croncmd $clashdir/cron
 		#启用面板配置自动保存
 		cronset '#每10分钟保存节点配置' "*/10 * * * * test -n \"\$(pidof clash)\" && $clashdir/start.sh web_save #每10分钟保存节点配置"
 		[ -f $clashdir/web_save ] && web_restore & #后台还原面板配置
@@ -945,7 +947,7 @@ bfstart)
 afstart)
 		afstart
 	;;
-start)		
+start)
 		[ -n "$(pidof clash)" ] && $0 stop #禁止多实例
 		getconfig
 		#检测必须文件并下载
@@ -964,7 +966,7 @@ start)
 			start_old
 		fi
 	;;
-stop)	
+stop)
 		getconfig
 		[ -n "$(pidof clash)" ] && [ "$restore" = false ] && web_save #保存面板配置
 		#删除守护进程&面板配置自动保存
@@ -1001,22 +1003,22 @@ init)
 			clashdir=$(cd $(dirname $0);pwd)
 			profile=/etc/profile
 		fi
-		echo "alias clash=\"$clashdir/clash.sh\"" >> $profile 
-		echo "export clashdir=\"$clashdir\"" >> $profile 
+		echo "alias clash=\"$clashdir/clash.sh\"" >> $profile
+		echo "export clashdir=\"$clashdir\"" >> $profile
 		[ -f $clashdir/.dis_startup ] && cronset "clash保守模式守护进程" || $0 start
         ;;
-getyaml)	
+getyaml)
 		getconfig
 		getyaml
 		;;
-updateyaml)	
+updateyaml)
 		getconfig
 		getyaml
 		modify_yaml
 		put_save http://localhost:${db_port}/configs "{\"path\":\"${clashdir}/config.yaml\"}"
 		;;
 webget)
-		#设置临时http代理 
+		#设置临时http代理
 		[ -n "$(pidof clash)" ] && getconfig && export all_proxy="http://$authentication@127.0.0.1:$mix_port"
 		#参数【$2】代表下载目录，【$3】代表在线地址
 		#参数【$4】代表输出显示，【$4】不启用重定向
@@ -1072,16 +1074,16 @@ set_proxy)
 			echo 'export ALL_PROXY=$all_proxy' >>  $profile
 		fi
 	;;
-unset_proxy)	
+unset_proxy)
 		[ -w ~/.bashrc ] && profile=~/.bashrc
 		[ -w /etc/profile ] && profile=/etc/profile
 		sed -i '/all_proxy/'d  $profile
 		sed -i '/ALL_PROXY/'d  $profile
 	;;
-streaming)	
+streaming)
 		streaming
 	;;
-db)	
+db)
 		$2
 	;;
 esac
