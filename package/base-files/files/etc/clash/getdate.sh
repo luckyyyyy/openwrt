@@ -22,12 +22,12 @@ linkconfig(){
 	if [ -z "$num" ] || [ "$num" -gt 17 ];then
 		errornum
 	elif [ "$num" = 0 ];then
-		echo 
+		echo
 	elif [ "$num" -le 17 ];then
 		#将对应标记值写入mark
 		rule_link=$num
 		setconfig rule_link $rule_link
-		echo -----------------------------------------------	  
+		echo -----------------------------------------------
 		echo -e "\033[32m设置成功！返回上级菜单\033[0m"
 	fi
 }
@@ -52,7 +52,7 @@ linkserver(){
 		#将对应标记值写入mark
 		server_link=$num
 		setconfig server_link $server_link
-		echo -----------------------------------------------	  
+		echo -----------------------------------------------
 		echo -e "\033[32m设置成功！返回上级菜单\033[0m"
 	fi
 }
@@ -100,7 +100,7 @@ getyaml(){
 	$clashdir/start.sh getyaml
 	if [ "$?" = 0 ];then
 		if [ "$inuserguide" != 1 ];then
-			read -p "是否启动clash服务以使配置文件生效？(1/0) > " res 
+			read -p "是否启动clash服务以使配置文件生效？(1/0) > " res
 			[ "$res" = 1 ] && clashstart || clashsh
 			exit;
 		fi
@@ -141,7 +141,7 @@ getlink(){
 				Url_link="$Url_link"\|"$link"
 			fi
 			i=$((i+1))
-				
+
 		elif [ "$link" = '1' ]; then
 			if [ -n "$Url_link" ];then
 				i=100
@@ -156,30 +156,30 @@ getlink(){
 				echo -e "\033[31m请先输入订阅或分享链接！\033[0m"
 				sleep 1
 			fi
-			
+
 		elif [ "$link" = '2' ]; then
 			linkfilter
-			
+
 		elif [ "$link" = '3' ]; then
 			linkfilter2
-			
+
 		elif [ "$link" = '4' ]; then
 			linkconfig
-			
+
 		elif [ "$link" = '5' ]; then
 			linkserver
-			
+
 		elif [ "$link" = 0 ];then
 			Url_link=""
 			i=100
-			
+
 		else
 			echo -----------------------------------------------
 			echo -e "\033[31m请输入正确的链接或者数字！\033[0m"
 			sleep 1
 		fi
 	done
-} 
+}
 getlink2(){
 	echo -----------------------------------------------
 	echo -e "\033[32m仅限导入完整clash配置文件链接！！！\033[0m"
@@ -253,7 +253,7 @@ clashlink(){
 			fi
 		fi
 		getlink
-	  
+
 	elif [ "$num" = 2 ];then
 		echo -----------------------------------------------
 		echo -e "\033[33m此功能可能会导致严重bug，仅限熟练了解clash运行机制的用户使用！！！\033[0m"
@@ -268,7 +268,7 @@ clashlink(){
 			sleep 1
 			getlink
 		fi
-		
+
 	elif [ "$num" = 3 ];then
 		yamlbak=$yaml.bak
 		if [ ! -f "$yaml".bak ];then
@@ -284,13 +284,13 @@ clashlink(){
 				echo -----------------------------------------------
 				echo -e "\033[32m配置文件已还原！请手动重启clash服务！\033[0m"
 				sleep 1
-			else 
+			else
 				echo -----------------------------------------------
 				echo -e "\033[31m操作已取消！返回上级菜单！\033[0m"
 				clashlink
 			fi
 		fi
-		
+
 	elif [ "$num" = 4 ];then
 		if [ -z "$Url" -a -z "$Https" ];then
 			echo -----------------------------------------------
@@ -309,7 +309,7 @@ clashlink(){
 				clashlink
 			fi
 		fi
-		
+
 	elif [ "$num" = 5 ];then
 		clashcron
 	else
@@ -326,7 +326,7 @@ gettar(){
 	echo 开始解压文件！
 	mkdir -p $clashdir > /dev/null
 	tar -zxvf '/tmp/clashfm.tar.gz' -C $clashdir/
-	[ $? -ne 0 ] && echo "文件解压失败！" && rm -rf /tmp/clashfm.tar.gz && exit 1 
+	[ $? -ne 0 ] && echo "文件解压失败！" && rm -rf /tmp/clashfm.tar.gz && exit 1
 	#初始化文件目录
 	[ -f "$clashdir/mark" ] || echo '#标识clash运行状态的文件，不明勿动！' > $clashdir/mark
 	#判断系统类型写入不同的启动文件
@@ -348,13 +348,13 @@ gettar(){
 		fi
 	fi
 	#修饰文件及版本号
-	shtype=sh && [ -n "$(ls -l /bin/sh|grep -oE 'dash|show|bash')" ] && shtype=bash 
+	shtype=sh && [ -n "$(ls -l /bin/sh|grep -oE 'dash|show|bash')" ] && shtype=bash
 	sed -i "s|/bin/sh|/bin/$shtype|" $clashdir/start.sh
 	chmod +x $clashdir/start.sh
 	setconfig versionsh_l $release_new
 	#设置更新地址
 	[ -n "$url" ] && setconfig update_url $url
-	#设置环境变量	
+	#设置环境变量
 	[ -w /opt/etc/profile ] && profile=/opt/etc/profile
 	[ -w /jffs/configs/profile.add ] && profile=/jffs/configs/profile.add
 	[ -w ~/.bashrc ] && profile=~/.bashrc
@@ -387,26 +387,27 @@ gettar(){
 		rm -rf $clashdir/clashservice
 	fi
 	#删除临时文件
-	rm -rf /tmp/clashfm.tar.gz 
+	rm -rf /tmp/clashfm.tar.gz
 	rm -rf $clashdir/clash.service
 }
 getsh(){
 	echo -----------------------------------------------
-	echo -e "当前脚本版本为：\033[33m $versionsh_l \033[0m"
-	echo -e "最新脚本版本为：\033[32m $release_new \033[0m"
-	echo -e "注意更新时会停止clash服务！"
+	# echo -e "当前脚本版本为：\033[33m built-in \033[0m"
+	# echo -e "最新脚本版本为：\033[32m $release_new \033[0m"
+	# echo -e "注意更新时会停止clash服务！"
+	echo -e "无需更新，随固件一起更新"
 	echo -----------------------------------------------
-	read -p "是否更新脚本？[1/0] > " res
-	if [ "$res" = '1' ]; then
-		tarurl=$update_url/bin/clashfm.tar.gz
-		#下载更新
-		gettar
-		#提示
-		echo -----------------------------------------------
-		echo -e "\033[32m管理脚本更新成功!\033[0m"
-		echo -----------------------------------------------
-		exit;
-	fi
+	# read -p "是否更新脚本？[1/0] > " res
+	# if [ "$res" = '1' ]; then
+	# 	tarurl=$update_url/bin/clashfm.tar.gz
+	# 	#下载更新
+	# 	gettar
+	# 	#提示
+	# 	echo -----------------------------------------------
+	# 	echo -e "\033[32m管理脚本更新成功!\033[0m"
+	# 	echo -----------------------------------------------
+	# 	exit;
+	# fi
 }
 getcpucore(){
 	cputype=$(uname -ms | tr ' ' '_' | tr '[A-Z]' '[a-z]')
@@ -461,7 +462,7 @@ getcore(){
 		else
 			echo -e "\033[32m$clashcore核心下载成功！\033[0m"
 			mv -f /tmp/clash.new $bindir/clash
-			chmod +x $bindir/clash 
+			chmod +x $bindir/clash
 			setconfig clashcore $clashcore
 			setconfig clashv $version
 		fi
@@ -491,7 +492,7 @@ setcore(){
 	echo
 	echo "5 手动指定处理器架构"
 	echo -----------------------------------------------
-	echo 0 返回上级菜单 
+	echo 0 返回上级菜单
 	read -p "请输入对应数字 > " num
 		if [ -z "$num" ]; then
 			errornum
@@ -569,7 +570,7 @@ setgeo(){
 			getgeo
 		else
 			echo -----------------------------------------------
-			echo -e "\033[31m未开启绕过内核功能，无需更新CN-IP文件！！\033[0m"	
+			echo -e "\033[31m未开启绕过内核功能，无需更新CN-IP文件！！\033[0m"
 			sleep 1
 		fi
 	elif [ "$num" = '4' ]; then
@@ -608,7 +609,7 @@ getdb(){
 		tar -zxvf "/tmp/clashdb.tar.gz" -C $dbdir > /dev/null
 		if [ $? -ne 0 ];then
 			tar -zxvf "/tmp/clashdb.tar.gz" --no-same-permissions -C $dbdir > /dev/null
-			[ $? -ne 0 ] && echo "文件解压失败！" && rm -rf /tmp/clashfm.tar.gz && exit 1 
+			[ $? -ne 0 ] && echo "文件解压失败！" && rm -rf /tmp/clashfm.tar.gz && exit 1
 		fi
 		#修改默认host和端口
 		if [ "$db_type" = "clashdb" -o "$db_type" = "meta_db" ];then
@@ -770,7 +771,7 @@ setserver(){
 	echo -e " 9 \033[31m版本回退\033[0m"
 	echo -e " 0 返回上级菜单"
 	read -p "请输入对应数字 > " num
-	if	[ -z "$num" ]; then 
+	if	[ -z "$num" ]; then
 		errornum
 	elif [ "$num" = 1 ]; then
 		release_url='https://fastly.jsdelivr.net/gh/juewuy/ShellClash'
@@ -841,8 +842,8 @@ if [ -z "$release_new" ];then
 		release_type=正式版
 	else
 		release_type=测试版
-	fi	
-	$clashdir/start.sh webget /tmp/clashversion $update_url/bin/version echooff 
+	fi
+	$clashdir/start.sh webget /tmp/clashversion $update_url/bin/version echooff
 	[ "$?" = "0" ] && release_new=$(cat /tmp/clashversion | grep -oE 'versionsh=.*' | awk -F'=' '{ print $2 }')
 	[ -n "$release_new" ] && source /tmp/clashversion 2>/dev/null || echo -e "\033[31m检查更新失败！请检查网络连接或切换安装源！\033[0m"
 	rm -rf /tmp/clashversion
@@ -860,7 +861,7 @@ update(){
 	[ -z "$clash_v" ] && clash_v=$clashv
 	echo -e "\033[30;47m欢迎使用更新功能：\033[0m"
 	echo -----------------------------------------------
-	echo -e " 1 更新\033[36m管理脚本  	\033[33m$versionsh_l\033[0m > \033[32m$versionsh$release_type\033[0m"
+	echo -e " 1 更新\033[36m管理脚本  	\033[33mbuilt-in\033[0m > \033[32m$versionsh$release_type\033[0m"
 	echo -e " 2 切换\033[33mclash核心 	\033[33m$clash_v\033[0m > \033[32m$clash_n\033[0m"
 	echo -e " 3 更新\033[32mGeoIP/CN-IP	\033[33m$Geo_v\033[0m > \033[32m$GeoIP_v\033[0m"
 	echo -e " 4 安装本地\033[35mDashboard\033[0m面板"
@@ -870,44 +871,44 @@ update(){
 	echo -e " 7 切换\033[36m安装源\033[0m及\033[36m安装版本\033[0m"
 	echo -e " 8 鸣谢"
 	echo -e " 9 \033[31m卸载\033[34mShellClash\033[0m"
-	echo -e " 0 返回上级菜单" 
+	echo -e " 0 返回上级菜单"
 	echo -----------------------------------------------
 	read -p "请输入对应数字 > " num
 	if [ -z "$num" ]; then
 		errornum
 	elif [ "$num" = 0 ]; then
 		i=
-	elif [ "$num" = 1 ]; then	
-		getsh	
+	elif [ "$num" = 1 ]; then
+		getsh
 
-	elif [ "$num" = 2 ]; then	
+	elif [ "$num" = 2 ]; then
 		setcore
 		update
-		
-	elif [ "$num" = 3 ]; then	
+
+	elif [ "$num" = 3 ]; then
 		setgeo
 		update
-	
-	elif [ "$num" = 4 ]; then	
+
+	elif [ "$num" = 4 ]; then
 		setdb
 		update
-		
-	elif [ "$num" = 5 ]; then	
+
+	elif [ "$num" = 5 ]; then
 		setcrt
-		update	
-		
-	elif [ "$num" = 6 ]; then	
+		update
+
+	elif [ "$num" = 6 ]; then
 		echo -----------------------------------------------
 		echo -e "PAC配置链接为：\033[30;47m http://$host:$db_port/ui/pac \033[0m"
 		echo -e "PAC的使用教程请参考：\033[4;32mhttps://juewuy.github.io/ehRUeewcv\033[0m"
 		sleep 2
 		update
-		
-	elif [ "$num" = 7 ]; then	
+
+	elif [ "$num" = 7 ]; then
 		setserver
 		update
-		
-	elif [ "$num" = 8 ]; then		
+
+	elif [ "$num" = 8 ]; then
 		echo -----------------------------------------------
 		echo -e "感谢：\033[32mClash \033[0m作者\033[36m Dreamacro\033[0m 项目地址：\033[32mhttps://github.com/Dreamacro/clash\033[0m"
 		echo -e "感谢：\033[32msubconverter \033[0m作者\033[36m tindy2013\033[0m 项目地址：\033[32mhttps://github.com/tindy2013/subconverter\033[0m"
@@ -918,7 +919,7 @@ update(){
 		echo -e "感谢：\033[32m更多的帮助过我的人！\033[0m"
 		sleep 2
 		update
-		
+
 	elif [ "$num" = 9 ]; then
 		$0 -u
 		update
@@ -928,7 +929,7 @@ update(){
 }
 #新手引导
 userguide(){
-	whichmod(){	
+	whichmod(){
 		echo -----------------------------------------------
 		echo -e "\033[33m是否需要代理UDP流量(主要用于连接外服游戏)？ \033[0m"
 		echo -----------------------------------------------
@@ -953,7 +954,7 @@ userguide(){
 			setconfig redir_mod "Redir模式"
 			setconfig clashcore "clash"
 			setconfig tproxy_mod "已开启"
-		fi		
+		fi
 	}
 	forwhat(){
 		echo -----------------------------------------------
@@ -1037,7 +1038,7 @@ userguide(){
 		dns_nameserver='https://223.5.5.5/dns-query, https://doh.pub/dns-query, tls://dns.rubyfish.cn:853'
 		dns_fallback='https://1.0.0.1/dns-query, https://8.8.4.4/dns-query, https://doh.opendns.com/dns-query'
 		setconfig dns_nameserver \'"$dns_nameserver"\'
-		setconfig dns_fallback \'"$dns_fallback"\' 
+		setconfig dns_fallback \'"$dns_fallback"\'
 	fi
 	rm -rf /tmp/ssl_test
 	#开启公网访问
@@ -1064,7 +1065,7 @@ userguide(){
 			host=$(curl ip.sb  2>/dev/null | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
 			if [ -z "$host" ];then
 				sethost
-			fi	
+			fi
 			public_support=已开启
 			setconfig secret $secret
 			setconfig mix_port $mix_port
@@ -1084,7 +1085,7 @@ userguide(){
 	echo -----------------------------------------------
 	echo -e "\033[36m很好！现在只需要执行启动就可以愉快的使用了！\033[0m"
 	echo -----------------------------------------------
-	read -p "立即启动clash服务？(1/0) > " res 
+	read -p "立即启动clash服务？(1/0) > " res
 	[ "$res" = 1 ] && clashstart && sleep 2
 	clashsh
 }
@@ -1113,7 +1114,7 @@ testcommand(){
 	elif [ "$num" = 1 ]; then
 		$clashdir/start.sh stop
 		echo -----------------------------------------------
-		[ -x $clashdir/clash ] && $clashdir/clash -t -d $clashdir	
+		[ -x $clashdir/clash ] && $clashdir/clash -t -d $clashdir
 		[ "$?" = 0 ] && testover=32m测试通过！|| testover=31m出现错误！请截图后到TG群询问！！！
 		echo -e "\033[$testover\033[0m"
 		exit;

@@ -1,5 +1,4 @@
 #标识clash运行状态的文件，不明勿动！
-versionsh_l=1.6.3
 update_url=https://raw.fastgit.org/juewuy/ShellClash/master
 userguide=1
 redir_mod=Redir模式
@@ -7,6 +6,6 @@ clashcore=clash.net
 hostdir=':9999/ui'
 cn_ip_route=已开启
 dns_redir=已开启
-dns_fallback='https://1.1.1.1/dns-query,tls://8.8.8.8:853'
+dns_fallback='https://1.1.1.1/dns-query,tls://8.8.8.8:853,tls://1.1.1.1:853'
 dns_nameserver='202.101.172.35,202.101.172.47,119.28.28.28,223.5.5.5'
 secret=123456

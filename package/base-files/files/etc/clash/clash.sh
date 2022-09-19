@@ -57,7 +57,7 @@ getconfig(){
 		run="\033[32m正在运行（$redir_mod）\033[0m"
 		VmRSS=`cat /proc/$PID/status|grep -w VmRSS|awk '{print $2,$3}'`
 		#获取运行时长
-		if [ -n "$start_time" ]; then 
+		if [ -n "$start_time" ]; then
 			time=$((`date +%s`-start_time))
 			day=$((time/86400))
 			[ "$day" = "0" ] && day='' || day="$day天"
@@ -70,7 +70,7 @@ getconfig(){
 	fi
 	#输出状态
 	echo -----------------------------------------------
-	echo -e "\033[30;46m欢迎使用ShellClash！\033[0m		版本：$versionsh_l"
+	echo -e "\033[30;46m欢迎使用ShellClash！\033[0m		版本：built-in 1.6.4-dev"
 	echo -e "Clash服务"$run"，"$auto""
 	if [ -n "$PID" ];then
 		echo -e "当前内存占用：\033[44m"$VmRSS"\033[0m，已运行：\033[46;30m"$day"\033[44;37m"$time"\033[0m"
@@ -148,7 +148,7 @@ setport(){
 			echo -e "\033[31m当前端口已被其他进程占用，请重新输入！\033[0m"
 			inputport
 		else
-			setconfig $xport $portx 
+			setconfig $xport $portx
 			echo -e "\033[32m设置成功！！！\033[0m"
 			setport
 		fi
@@ -164,7 +164,7 @@ setport(){
 	echo -e " 8 指定本机host地址：	\033[36m$host\033[0m"
 	echo -e " 0 返回上级菜单"
 	read -p "请输入对应数字 > " num
-	if [ -z "$num" ]; then 
+	if [ -z "$num" ]; then
 		errornum
 	elif [ "$num" = 1 ]; then
 		xport=mix_port
@@ -249,7 +249,7 @@ setport(){
 		fi
 		sleep 1
 		setport
-	fi	
+	fi
 }
 setdns(){
 	[ -z "$dns_nameserver" ] && dns_nameserver='114.114.114.114, 223.5.5.5'
@@ -273,7 +273,7 @@ setdns(){
 	echo -e " 0 返回上级菜单"
 	echo -----------------------------------------------
 	read -p "请输入对应数字 > " num
-	if [ -z "$num" ]; then 
+	if [ -z "$num" ]; then
 		errornum
 	elif [ "$num" = 1 ]; then
 		read -p "请输入新的DNS > " dns_nameserver
@@ -283,16 +283,16 @@ setdns(){
 			echo -e "\033[32m设置成功！！！\033[0m"
 		fi
 		setdns
-		
+
 	elif [ "$num" = 2 ]; then
 		read -p "请输入新的DNS > " dns_fallback
 		dns_fallback=$(echo $dns_fallback | sed 's/|/\,\ /g')
 		if [ -n "$dns_fallback" ]; then
-			setconfig dns_fallback \'"$dns_fallback"\' 
+			setconfig dns_fallback \'"$dns_fallback"\'
 			echo -e "\033[32m设置成功！！！\033[0m"
 		fi
 		setdns
-		
+
 	elif [ "$num" = 3 ]; then
 		dns_nameserver=""
 		dns_fallback=""
@@ -300,7 +300,7 @@ setdns(){
 		setconfig dns_fallback
 		echo -e "\033[33mDNS配置已重置！！！\033[0m"
 		setdns
-		
+
 	elif [ "$num" = 4 ]; then
 		$clashdir/start.sh webget /tmp/ssl_test https://www.baidu.com echooff rediron skipceroff
 		if [ "$？" = "1" ];then
@@ -316,16 +316,16 @@ setdns(){
 			dns_nameserver='https://223.5.5.5/dns-query, https://doh.pub/dns-query, tls://dns.rubyfish.cn:853'
 			dns_fallback='tls://1.0.0.1:853, tls://8.8.4.4:853, https://doh.opendns.com/dns-query'
 			setconfig dns_nameserver \'"$dns_nameserver"\'
-			setconfig dns_fallback \'"$dns_fallback"\' 
+			setconfig dns_fallback \'"$dns_fallback"\'
 			echo -e "\033[32m设置成功！！！\033[0m"
 		fi
 		rm -rf /tmp/ssl_test
 		sleep 1
 		setdns
-		
+
 	elif [ "$num" = 5 ]; then
 		echo -----------------------------------------------
-		if [ "$ipv6_dns" = "未开启" ]; then 
+		if [ "$ipv6_dns" = "未开启" ]; then
 			echo -e "\033[32m开启成功！！\033[0m"
 			ipv6_dns=已开启
 		else
@@ -335,10 +335,10 @@ setdns(){
 		sleep 1
 		setconfig ipv6_dns $ipv6_dns
 		setdns
-				
+
 	elif [ "$num" = 6 ]; then
 		echo -----------------------------------------------
-		if [ "$dns_redir" = "未开启" ]; then 
+		if [ "$dns_redir" = "未开启" ]; then
 			echo -e "\033[31m将使用OpenWrt中Dnsmasq插件自带的DNS转发功能转发DNS请求至clash内核！\033[0m"
 			echo -e "\033[33m启用后将禁用本插件自带的iptables转发功能\033[0m"
 			dns_redir=已开启
@@ -351,7 +351,7 @@ setdns(){
 		sleep 1
 		setconfig dns_redir $dns_redir
 		setdns
-	
+
 	elif [ "$num" = 7 ]; then
 		echo -----------------------------------------------
 		if [ "$dns_no" = "未禁用" ]; then
@@ -456,7 +456,7 @@ macfilter(){
 	[ -z "$dhcpdir" ] && [ -f /tmp/dhcp.leases ] && dhcpdir='/tmp/dhcp.leases'
 	[ -z "$dhcpdir" ] && [ -f /tmp/dnsmasq.leases ] && dhcpdir='/tmp/dnsmasq.leases'
 	[ -z "$dhcpdir" ] && dhcpdir='/dev/null'
-	[ -z "$macfilter_type" ] && macfilter_type='黑名单' 
+	[ -z "$macfilter_type" ] && macfilter_type='黑名单'
 	if [ "$macfilter_type" = "黑名单" ];then
 		macfilter_over='白名单'
 		macfilter_scrip='不'
@@ -496,10 +496,10 @@ macfilter(){
 		echo -----------------------------------------------
 		echo -e "\033[32m已切换为$macfilter_type模式！\033[0m"
 		macfilter
-	elif [ "$num" = 2 ]; then	
+	elif [ "$num" = 2 ]; then
 		add_mac
 		macfilter
-	elif [ "$num" = 3 ]; then	
+	elif [ "$num" = 3 ]; then
 		del_mac
 		macfilter
 	elif [ "$num" = 4 ]; then
@@ -525,13 +525,13 @@ localproxy(){
 	echo -e " 0 返回上级菜单"
 	echo -----------------------------------------------
 	read -p "请输入对应数字 > " num
-	if [ -z "$num" ]; then 
+	if [ -z "$num" ]; then
 		errornum
 	elif [ "$num" = 0 ]; then
 		i=
 	elif [ "$num" = 1 ]; then
 		echo -----------------------------------------------
-		if [ "$local_proxy" = "未开启" ]; then 
+		if [ "$local_proxy" = "未开启" ]; then
 			if [ -n "$authentication" ] && [ "$authentication" != "未设置" ] ;then
 				echo -e "\033[32m检测到您已经设置了Http/Sock5代理密码，请先取消密码！\033[0m"
 				sleep 1
@@ -549,7 +549,7 @@ localproxy(){
 					echo -e "\033[36m请重新启动clash服务！\033[0m"
 				fi
 				sleep 1
-			fi		
+			fi
 		else
 			local_proxy=未开启
 			setconfig local_proxy $local_proxy
@@ -578,19 +578,19 @@ localproxy(){
 		localproxy
 	else
 		errornum
-	fi	
+	fi
 }
 clashcfg(){
 	set_redir_mod(){
 		set_redir_config(){
 			setconfig redir_mod $redir_mod
-			setconfig dns_mod $dns_mod 
+			setconfig dns_mod $dns_mod
 			if [ "$redir_mod" = "混合模式" -o "$redir_mod" = "Tun模式" ] && [ "$clashcore" = "clash" ];then
 				rm -rf $bindir/clash
 				rm -rf $clashdir/clash
 				setconfig clashcore clash.meta
 			fi
-			echo -----------------------------------------------	
+			echo -----------------------------------------------
 			echo -e "\033[36m已设为 $redir_mod ！！\033[0m"
 		}
 		echo -----------------------------------------------
@@ -611,7 +611,7 @@ clashcfg(){
 		echo -e "              必须\033[33m手动配置\033[0mhttp/sock5代理"
 		echo -e "              或使用内置的PAC文件配置代理"
 		echo " 0 返回上级菜单"
-		read -p "请输入对应数字 > " num	
+		read -p "请输入对应数字 > " num
 		if [ -z "$num" ]; then
 			errornum
 		elif [ "$num" = 0 ]; then
@@ -633,7 +633,7 @@ clashcfg(){
 				else
 					set_redir_mod
 				fi
-			else	
+			else
 				redir_mod=Tun模式
 				dns_mod=fake-ip
 				set_redir_config
@@ -649,13 +649,13 @@ clashcfg(){
 				else
 					set_redir_mod
 				fi
-			else	
-				redir_mod=混合模式	
+			else
+				redir_mod=混合模式
 				set_redir_config
 			fi
 		elif [ "$num" = 4 ]; then
-			redir_mod=纯净模式	
-			set_redir_config		
+			redir_mod=纯净模式
+			set_redir_config
 			echo -----------------------------------------------
 			echo -e "\033[33m当前模式需要手动在设备WiFi或应用中配置HTTP或sock5代理\033[0m"
 			echo -e "HTTP/SOCK5代理服务器地址：\033[30;47m$host\033[0m;端口均为：\033[30;47m$mix_port\033[0m"
@@ -686,12 +686,12 @@ clashcfg(){
 		elif [ "$num" = 1 ]; then
 			set_fake_ip(){
 				dns_mod=fake-ip
-				setconfig dns_mod $dns_mod 
-				echo -----------------------------------------------	
+				setconfig dns_mod $dns_mod
+				echo -----------------------------------------------
 				echo -e "\033[36m已设为 $dns_mod 模式！！\033[0m"
 				}
 			if [ "$redir_mod" = "Redir模式" ];then
-				echo -----------------------------------------------	
+				echo -----------------------------------------------
 				read -p "fake-ip与Redir模式兼容性较差，是否依然强制使用？(1/0) > "	res
 				[ "$res" = 1 ] && set_fake_ip
 			else
@@ -700,8 +700,8 @@ clashcfg(){
 
 		elif [ "$num" = 2 ]; then
 			dns_mod=redir_host
-			setconfig dns_mod $dns_mod 
-			echo -----------------------------------------------	
+			setconfig dns_mod $dns_mod
+			echo -----------------------------------------------
 			echo -e "\033[36m已设为 $dns_mod 模式！！\033[0m"
 		else
 			errornum
@@ -718,7 +718,7 @@ clashcfg(){
 			echo -e "\033[33m已添加Fake-ip过滤地址：\033[0m"
 			cat $clashdir/fake_ip_filter | awk '{print NR" "$1}'
 		else
-			echo -e "\033[33m你还未添加Fake-ip过滤地址\033[0m" 
+			echo -e "\033[33m你还未添加Fake-ip过滤地址\033[0m"
 		fi
 		echo -----------------------------------------------
 		echo -e "\033[32m输入数字直接移除对应地址，输入地址直接添加！\033[0m"
@@ -727,10 +727,10 @@ clashcfg(){
 			i=
 		elif [ "$input" -le "$(cat $clashdir/fake_ip_filter | wc -l)" ];then
 			sed -i "${input}d" $clashdir/fake_ip_filter	2>/dev/null
-			echo -e "\033[32m移除成功！\033[0m"	
+			echo -e "\033[32m移除成功！\033[0m"
 			fake_ip_filter
 		else
-			echo -e "你输入的地址是：\033[32m$input\033[0m"	
+			echo -e "你输入的地址是：\033[32m$input\033[0m"
 			read -p "确认添加？(1/0) > " res
 			[ "$res" = 1 ] && echo $input >> $clashdir/fake_ip_filter || fake_ip_filter
 		fi
@@ -774,26 +774,26 @@ clashcfg(){
 			set_redir_mod
 		fi
 		clashcfg
-	  
+
 	elif [ "$num" = 2 ]; then
 		set_dns_mod
 		clashcfg
-	
-	elif [ "$num" = 3 ]; then	
+
+	elif [ "$num" = 3 ]; then
 		echo -----------------------------------------------
-		if [ "$skip_cert" = "未开启" ] > /dev/null 2>&1; then 
+		if [ "$skip_cert" = "未开启" ] > /dev/null 2>&1; then
 			echo -e "\033[33m已设为开启跳过本地证书验证！！\033[0m"
 			skip_cert=已开启
 		else
 			echo -e "\033[33m已设为禁止跳过本地证书验证！！\033[0m"
 			skip_cert=未开启
 		fi
-		setconfig skip_cert $skip_cert 
+		setconfig skip_cert $skip_cert
 		clashcfg
-	
-	elif [ "$num" = 4 ]; then	
-		echo -----------------------------------------------	
-		if [ "$common_ports" = "未开启" ]; then 
+
+	elif [ "$num" = 4 ]; then
+		echo -----------------------------------------------
+		if [ "$common_ports" = "未开启" ]; then
 			echo -e "\033[33m已设为仅代理【$multiport】等常用端口！！\033[0m"
 			common_ports=已开启
 		else
@@ -801,21 +801,21 @@ clashcfg(){
 			common_ports=未开启
 		fi
 		setconfig common_ports $common_ports
-		clashcfg  
+		clashcfg
 
-	elif [ "$num" = 5 ]; then	
+	elif [ "$num" = 5 ]; then
 		macfilter
 		clashcfg
-		
-	elif [ "$num" = 6 ]; then	
+
+	elif [ "$num" = 6 ]; then
 		localproxy
 		sleep 1
 		clashcfg
-		
-	elif [ "$num" = 7 ]; then	
+
+	elif [ "$num" = 7 ]; then
 		echo -----------------------------------------------
 		if [ "$redir_mod" = "混合模式" -o "$redir_mod" = "Tun模式" -o "$tproxy_mod" = "已开启" ];then
-			if [ "$quic_rj" = "未开启" ]; then 
+			if [ "$quic_rj" = "未开启" ]; then
 				echo -e "\033[33m已禁止QUCI流量通过clash内核！！\033[0m"
 				quic_rj=已启用
 			else
@@ -826,8 +826,8 @@ clashcfg(){
 		else
 			echo -e "\033[33m当前模式默认不会代理UDP流量，无需设置！！\033[0m"
 		fi
-		clashcfg	
-		
+		clashcfg
+
 	elif [ "$num" = 8 ]; then
 		echo -----------------------------------------------
 		if [ "$dns_mod" = "fake-ip" ];then
@@ -838,7 +838,7 @@ clashcfg(){
 				echo -e "\033[31m当前设备缺少ipset模块，无法启用绕过功能！！\033[0m"
 				sleep 1
 			else
-				if [ "$cn_ip_route" = "未开启" ]; then 
+				if [ "$cn_ip_route" = "未开启" ]; then
 					echo -e "\033[32m已开启CN_IP绕过内核功能！！\033[0m"
 					cn_ip_route=已开启
 					sleep 1
@@ -849,9 +849,9 @@ clashcfg(){
 				setconfig cn_ip_route $cn_ip_route
 			fi
 		fi
-		clashcfg  	
-		
-	elif [ "$num" = 9 ]; then	
+		clashcfg
+
+	elif [ "$num" = 9 ]; then
 		clashstart
 	else
 		errornum
@@ -887,9 +887,9 @@ clashadv(){
 		errornum
 	elif [ "$num" = 0 ]; then
 		i=
-	elif [ "$num" = 1 ]; then	
+	elif [ "$num" = 1 ]; then
 		echo -----------------------------------------------
-		if [ "$start_old" = "未开启" ] > /dev/null 2>&1; then 
+		if [ "$start_old" = "未开启" ] > /dev/null 2>&1; then
 			echo -e "\033[33m改为使用保守模式启动clash服务！！\033[0m"
 			echo -e "\033[31m注意：部分设备保守模式可能无法禁用开机启动！！\033[0m"
 			start_old=已开启
@@ -902,17 +902,17 @@ clashadv(){
 				start_old=未开启
 				setconfig start_old $start_old
 				$clashdir/start.sh stop
-				
+
 			else
 				echo -e "\033[31m当前设备不支持以其他模式启动！！\033[0m"
 			fi
 		fi
 		sleep 1
-		clashadv 
-		
+		clashadv
+
 	elif [ "$num" = 2 ]; then
 		echo -----------------------------------------------
-		if [ "$ipv6_support" = "未开启" ] > /dev/null 2>&1; then 
+		if [ "$ipv6_support" = "未开启" ] > /dev/null 2>&1; then
 			echo -e "\033[33m已开启对ipv6协议的支持！！\033[0m"
 			echo -e "Clash对ipv6的支持并不友好，如不能使用请静等修复！"
 			ipv6_support=已开启
@@ -922,11 +922,11 @@ clashadv(){
 			ipv6_support=未开启
 		fi
 		setconfig ipv6_support $ipv6_support
-		clashadv   
-		
-	elif [ "$num" = 3 ]; then	
+		clashadv
+
+	elif [ "$num" = 3 ]; then
 		echo -----------------------------------------------
-		if [ "$tproxy_mod" = "未开启" ]; then 
+		if [ "$tproxy_mod" = "未开启" ]; then
 			if [ -n "$(iptables -j TPROXY 2>&1 | grep 'on-port')" ];then
 				tproxy_mod=已开启
 				echo -e "\033[32m已经为Redir模式启用udp转发功能！\033[0m"
@@ -940,12 +940,12 @@ clashadv(){
 		fi
 		setconfig tproxy_mod $tproxy_mod
 		sleep 1
-		clashadv 	
-		
-	elif [ "$num" = 4 ]; then	
+		clashadv
+
+	elif [ "$num" = 4 ]; then
 		echo -----------------------------------------------
 		dir_size=$(df $clashdir | awk '{print $4}' | sed 1d)
-		if [ "$mini_clash" = "未开启" ]; then 
+		if [ "$mini_clash" = "未开启" ]; then
 			if [ "$dir_size" -gt 20480 ];then
 				echo -e "\033[33m您的设备空间充足(>20M)，无需开启！\033[0m"
 			elif pidof systemd >/dev/null 2>&1;then
@@ -969,9 +969,9 @@ clashadv(){
 		setconfig bindir $bindir
 		sleep 1
 		clashadv
-		
+
 	elif [ "$num" = 5 ]; then
-		if [ "$public_support" = "未开启" ]; then 
+		if [ "$public_support" = "未开启" ]; then
 			echo -e "\033[32m已开启公网访问Dashboard端口及Http/Sock5代理端口！！\033[0m"
 			echo -e "\033[33m安全起见建议设置相关访问密码！！\033[0m"
 			public_support=已开启
@@ -985,7 +985,7 @@ clashadv(){
 			sleep 1
 		fi
 			clashadv
-		
+
 	elif [ "$num" = 6 ]; then
 		source $ccfg
 		if [ "$dns_no" = "已禁用" ];then
@@ -997,8 +997,8 @@ clashadv(){
 		else
 			setdns
 		fi
-		clashadv	
-		
+		clashadv
+
 	elif [ "$num" = 8 ]; then
 		source $ccfg
 		if [ -n "$(pidof clash)" ];then
@@ -1013,7 +1013,7 @@ clashadv(){
 			setport
 		fi
 		clashadv
-		
+
 	elif [ "$num" = 7 ]; then
 		[ ! -f $clashdir/user.yaml ] && cat > $clashdir/user.yaml <<EOF
 #用于编写自定义设定(可参考https://lancellc.gitbook.io/clash)，例如
@@ -1051,8 +1051,8 @@ EOF
 		echo -e "如需自定义节点，可以在config.yaml文件中修改或者直接替换config.yaml文件！\033[0m"
 		sleep 3
 		clashadv
-		
-	elif [ "$num" = 9 ]; then	
+
+	elif [ "$num" = 9 ]; then
 		echo -e " 1 备份脚本设置"
 		echo -e " 2 还原脚本设置"
 		echo -e " 3 重置脚本设置"
@@ -1101,14 +1101,14 @@ streaming(){
 	echo -e " 2 预解析\033[36mDisney+域名  	\033[33m$disneyP_pre\033[0m"
 	echo -e " 3 设置预解析间隔	\033[32m$streaming_int小时\033[0m"
 	echo -e " 4 更新本地\033[32m域名数据库\033[0m"
-	echo -e " 0 返回上级菜单" 
+	echo -e " 0 返回上级菜单"
 	echo -----------------------------------------------
 	read -p "请输入对应数字 > " num
 	if [ -z "$num" ]; then
 		errornum
 	elif [ "$num" = 0 ]; then
 		i=
-	elif [ "$num" = 1 ]; then	
+	elif [ "$num" = 1 ]; then
 		echo -----------------------------------------------
 		if [ "$netflix_pre" = "未开启" ] > /dev/null 2>&1; then
 			echo -e "\033[33m已启用Netflix域名预解析功能！！\033[0m"
@@ -1122,7 +1122,7 @@ streaming(){
 		setconfig netflix_pre $netflix_pre
 		sleep 1
 		streaming
-	elif [ "$num" = 2 ]; then	
+	elif [ "$num" = 2 ]; then
 		echo -----------------------------------------------
 		if [ "$disneyP_pre" = "未开启" ] > /dev/null 2>&1; then
 			echo -e "\033[33m已启用Disney+域名预解析功能！！\033[0m"
@@ -1136,14 +1136,14 @@ streaming(){
 		setconfig disneyP_pre $disneyP_pre
 		sleep 1
 		streaming
-	elif [ "$num" = 3 ]; then	
+	elif [ "$num" = 3 ]; then
 		echo -----------------------------------------------
 		read -p "请输入刷新间隔(1-24小时,不支持小数) > " num
-			if [ -z "$num" ]; then 
+			if [ -z "$num" ]; then
 				errornum
-			elif [ $num -gt 24 ] || [ $num -lt 1 ]; then 
+			elif [ $num -gt 24 ] || [ $num -lt 1 ]; then
 				errornum
-			else	
+			else
 				streaming_int=$num
 				setconfig streaming_int $streaming_int
 				echo -e "\033[32m设置成功！！！\033[0m"
@@ -1160,7 +1160,7 @@ streaming(){
 	else
 		errornum
 		streaming
-	fi		
+	fi
 }
 tools(){
 	ssh_tools(){
@@ -1185,7 +1185,7 @@ tools(){
 				errornum
 			elif [ "$num" = 0 ]; then
 				i=
-				
+
 			elif [ "$num" = 1 ]; then
 				read -p "请输入端口号(1000-65535) > " num
 					if [ -z "$num" ]; then
@@ -1203,13 +1203,13 @@ tools(){
 					fi
 				sleep 1
 				ssh_tools
-				
+
 			elif [ "$num" = 2 ]; then
 				passwd
 				sleep 1
 				ssh_tools
-				
-			elif [ "$num" = 3 ]; then	 
+
+			elif [ "$num" = 3 ]; then
 				if [ "$ssh_ol" = "开启" ];then
 					iptables -t nat -A PREROUTING -p tcp -m multiport --dports $ssh_port -j REDIRECT --to-ports 22
 					[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -p tcp -m multiport --dports $ssh_port -j REDIRECT --to-ports 22
@@ -1251,15 +1251,15 @@ tools(){
 		errornum
 	elif [ "$num" = 0 ]; then
 		i=
-		
+
 	elif [ "$num" = 1 ]; then
-		source $clashdir/getdate.sh && testcommand  
-		
+		source $clashdir/getdate.sh && testcommand
+
 	elif [ "$num" = 2 ]; then
 		ssh_tools
 		sleep 1
-		tools  
-		
+		tools
+
 	elif [ "$num" = 3 ]; then
 		echo -----------------------------------------------
 		if [ ! -f $clashdir/ShellDDNS.sh ];then
@@ -1275,8 +1275,8 @@ tools(){
 			source $clashdir/ShellDDNS.sh
 		fi
 		sleep 1
-		tools  
-		
+		tools
+
 	elif [ "$num" = 4 ]; then
 		checkcfg=$(cat $ccfg)
 		echo -----------------------------------------------
@@ -1313,14 +1313,14 @@ tools(){
 			[ "$checkcfg" != "$checkcfg_new" ] && checkrestart
 		fi
 		tools
-		
-	elif [ -x /usr/sbin/otapredownload ] && [ "$num" = 5 ]; then	
-		[ "$mi_update" = "禁用" ] && sed -i "/otapredownload/d" /etc/crontabs/root || echo "15 3,4,5 * * * /usr/sbin/otapredownload >/dev/null 2>&1" >> /etc/crontabs/root	
+
+	elif [ -x /usr/sbin/otapredownload ] && [ "$num" = 5 ]; then
+		[ "$mi_update" = "禁用" ] && sed -i "/otapredownload/d" /etc/crontabs/root || echo "15 3,4,5 * * * /usr/sbin/otapredownload >/dev/null 2>&1" >> /etc/crontabs/root
 		echo -----------------------------------------------
 		echo -e "已\033[33m$mi_update\033[0m小米路由器的自动更新，如未生效，请在官方APP中同步设置！"
 		sleep 1
-		tools	
-		
+		tools
+
 	elif [ -f /usr/sbin/otapredownload ] && [ "$num" = 6 ]; then
 		if [ "$mi_autoSSH" = "已启用" ];then
 			mi_autoSSH=禁用
@@ -1342,7 +1342,7 @@ tools(){
 		fi
 		setconfig mi_autoSSH $mi_autoSSH
 		setconfig mi_autoSSH_pwd $mi_autoSSH_pwd
-		tools		
+		tools
 	else
 		errornum
 	fi
@@ -1366,23 +1366,23 @@ clashcron(){
 			#设置具体时间
 			echo -----------------------------------------------
 			read -p "请输入小时（0-23） > " num
-			if [ -z "$num" ]; then 
+			if [ -z "$num" ]; then
 				errornum
 				setcron
-			elif [ $num -gt 23 ] || [ $num -lt 0 ]; then 
+			elif [ $num -gt 23 ] || [ $num -lt 0 ]; then
 				errornum
 				setcron
-			else	
+			else
 				hour=$num
 				echo -----------------------------------------------
 				read -p "请输入分钟（0-59） > " num
-				if [ -z "$num" ]; then 
+				if [ -z "$num" ]; then
 					errornum
 					setcron
-				elif [ $num -gt 59 ] || [ $num -lt 0 ]; then 
+				elif [ $num -gt 59 ] || [ $num -lt 0 ]; then
 					errornum
 					setcron
-				else	
+				else
 					min=$num
 						echo -----------------------------------------------
 						echo 将在$week1的$hour点$min分$cronname（旧的任务会被覆盖）
@@ -1400,7 +1400,7 @@ clashcron(){
 							echo -----------------------------------------------
 							echo -e "\033[31m定时任务已添加！！！\033[0m"
 						fi
-				fi			
+				fi
 			fi
 		}
 		echo -----------------------------------------------
@@ -1414,7 +1414,7 @@ clashcron(){
 		echo -e " 输入   0   返回上级菜单"
 		echo -----------------------------------------------
 		read -p "请输入对应数字 > " num
-		if [ -z "$num" ]; then 
+		if [ -z "$num" ]; then
 			errornum
 		elif [ "$num" = 0 ]; then
 			i=
@@ -1424,13 +1424,13 @@ clashcron(){
 			rm -f /tmp/conf
 			echo -----------------------------------------------
 			echo -e "\033[31m定时任务：$cronname已删除！\033[0m"
-		elif [ "$num" = 8 ]; then	
+		elif [ "$num" = 8 ]; then
 			week='*'
 			week1=每天
 			echo 已设为每天定时运行！
 			setcrontab
 		else
-			week=$num	
+			week=$num
 			week1=每周$week
 			echo 已设为每周 $num 运行！
 			setcrontab
@@ -1441,7 +1441,7 @@ clashcron(){
 	echo -e "\033[30;47m欢迎使用定时任务功能：\033[0m"
 	echo -----------------------------------------------
 	echo  -e "\033[33m已添加的定时任务：\033[36m"
-	croncmd -l | grep -oE ' #.*' 
+	croncmd -l | grep -oE ' #.*'
 	echo -e "\033[0m"-----------------------------------------------
 	echo -e " 1 设置\033[33m定时重启\033[0mclash服务"
 	echo -e " 2 设置\033[31m定时停止\033[0mclash服务"
@@ -1449,9 +1449,9 @@ clashcron(){
 	echo -e " 4 设置\033[33m定时更新\033[0m订阅并重启服务"
 	echo -e " 5 设置\033[33m定时更新\033[0m订阅但不重启服务"
 	echo -----------------------------------------------
-	echo -e " 0 返回上级菜单" 
+	echo -e " 0 返回上级菜单"
 	read -p "请输入对应数字 > " num
-	if [ -z "$num" ]; then 
+	if [ -z "$num" ]; then
 		errornum
 	elif [ "$num" = 0 ]; then
 		i=
@@ -1470,15 +1470,15 @@ clashcron(){
 		cronset="$clashdir/start.sh start"
 		setcron
 		clashcron
-	elif [ "$num" = 4 ]; then	
+	elif [ "$num" = 4 ]; then
 		cronname=更新订阅链接
 		cronset="$clashdir/start.sh getyaml && $clashdir/start.sh restart"
-		setcron	
+		setcron
 		clashcron
-	elif [ "$num" = 5 ]; then	
+	elif [ "$num" = 5 ]; then
 		cronname=更新订阅但不重启
 		cronset="$clashdir/start.sh updateyaml"
-		setcron	
+		setcron
 		clashcron
 	else
 		errornum
@@ -1504,14 +1504,14 @@ clashsh(){
 	if [ -z "$num" ];then
 		errornum
 		exit;
-		
+
 	elif [ "$num" = 0 ]; then
 		exit;
-		
+
 	elif [ "$num" = 1 ]; then
 		clashstart
 		exit;
-  
+
 	elif [ "$num" = 2 ]; then
 		checkcfg=$(cat $ccfg)
 		clashcfg
@@ -1545,11 +1545,11 @@ clashsh(){
 	elif [ "$num" = 5 ]; then
 		clashcron
 		clashsh
-    
+
 	elif [ "$num" = 6 ]; then
 		source $clashdir/getdate.sh && clashlink
 		clashsh
-		
+
 	elif [ "$num" = 7 ]; then
 		checkcfg=$(cat $ccfg)
 		clashadv
@@ -1571,7 +1571,7 @@ clashsh(){
 			[ "$checkcfg" != "$checkcfg_new" ] && checkrestart
 		fi
 		clashsh
-	
+
 	else
 		errornum
 		exit;
