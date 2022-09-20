@@ -25,7 +25,7 @@ getconfig(){
 	[ -z "$streaming_int" ] && streaming_int=24
 	#是否代理常用端口
 	[ -z "$common_ports" ] && common_ports=已开启
-	[ -z "$multiport" ] && multiport='22,53,587,465,995,993,143,80,443,8080'
+	[ -z "$multiport" ] && multiport='22,53,587,465,995,993,143,80,443,8080,853'
 	[ "$common_ports" = "已开启" ] && ports="-m multiport --dports $multiport"
 }
 setconfig(){
@@ -473,6 +473,7 @@ start_redir(){
 		for mac in $(cat $clashdir/mac); do
 			iptables -t nat -A clash -m mac --mac-source $mac -j RETURN
 		done
+		iptables -t nat -A clash -p tcp -s 172.16.0.0/12 -j REDIRECT --to-ports $redir_port
 		iptables -t nat -A clash -p tcp -s 192.168.0.0/16 -j REDIRECT --to-ports $redir_port
 		iptables -t nat -A clash -p tcp -s 10.0.0.0/8 -j REDIRECT --to-ports $redir_port
 		[ -n "$host_lan" ] && iptables -t nat -A clash -p tcp -s $host_lan -j REDIRECT --to-ports $redir_port
@@ -574,6 +575,7 @@ start_udp(){
 		for mac in $(cat $clashdir/mac); do
 			iptables -t mangle -A clash -m mac --mac-source $mac -j RETURN
 		done
+		iptables -t mangle -A clash -p udp -s 172.16.0.0/12 -j TPROXY --on-port $redir_port --tproxy-mark 1
 		iptables -t mangle -A clash -p udp -s 192.168.0.0/16 -j TPROXY --on-port $redir_port --tproxy-mark 1
 		iptables -t mangle -A clash -p udp -s 10.0.0.0/8 -j TPROXY --on-port $redir_port --tproxy-mark 1
 		[ -n "$host_lan" ] && iptables -t mangle -A clash -p udp -s $host_lan -j TPROXY --on-port $redir_port --tproxy-mark 1
