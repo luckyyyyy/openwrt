@@ -118,9 +118,9 @@
  
 --- a/include/uapi/linux/ip.h
 +++ b/include/uapi/linux/ip.h
-@@ -103,7 +103,7 @@ struct iphdr {
- 	__be32	saddr;
- 	__be32	daddr;
+@@ -106,7 +106,7 @@ struct iphdr {
+ 		__be32	daddr;
+ 	);
  	/*The options start here. */
 -};
 +} __attribute__((packed, aligned(2)));
@@ -129,10 +129,10 @@
  struct ip_auth_hdr {
 --- a/include/uapi/linux/ipv6.h
 +++ b/include/uapi/linux/ipv6.h
-@@ -132,7 +132,7 @@ struct ipv6hdr {
- 
- 	struct	in6_addr	saddr;
- 	struct	in6_addr	daddr;
+@@ -135,7 +135,7 @@ struct ipv6hdr {
+ 		struct	in6_addr	saddr;
+ 		struct	in6_addr	daddr;
+ 	);
 -};
 +} __attribute__((packed, aligned(2)));
  
@@ -214,7 +214,7 @@
  #include <linux/uaccess.h>
  #include <linux/ipv6.h>
  #include <linux/icmpv6.h>
-@@ -924,10 +925,10 @@ static void tcp_v6_send_response(const s
+@@ -927,10 +928,10 @@ static void tcp_v6_send_response(const s
  	topt = (__be32 *)(t1 + 1);
  
  	if (tsecr) {
@@ -292,7 +292,7 @@
  #endif /* _LINUX_TYPES_H */
 --- a/net/ipv4/af_inet.c
 +++ b/net/ipv4/af_inet.c
-@@ -1470,8 +1470,8 @@ struct sk_buff *inet_gro_receive(struct
+@@ -1469,8 +1469,8 @@ struct sk_buff *inet_gro_receive(struct
  	if (unlikely(ip_fast_csum((u8 *)iph, 5)))
  		goto out_unlock;
  
@@ -682,7 +682,7 @@
  struct fib6_info *fib6_info_alloc(gfp_t gfp_flags, bool with_fib6_nh)
 --- a/net/netfilter/nf_conntrack_proto_tcp.c
 +++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -415,7 +415,7 @@ static void tcp_sack(const struct sk_buf
+@@ -412,7 +412,7 @@ static void tcp_sack(const struct sk_buf
  
  	/* Fast path for timestamp-only option */
  	if (length == TCPOLEN_TSTAMP_ALIGNED
@@ -706,7 +706,7 @@
  EXPORT_SYMBOL(xfrm_parse_spi);
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -4127,14 +4127,16 @@ static bool tcp_parse_aligned_timestamp(
+@@ -4128,14 +4128,16 @@ static bool tcp_parse_aligned_timestamp(
  {
  	const __be32 *ptr = (const __be32 *)(th + 1);
  

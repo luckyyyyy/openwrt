@@ -208,7 +208,6 @@ ifndef DUMP
       ifneq ($(TOOLCHAIN_LIB_DIRS),)
         TARGET_LDFLAGS+= $(patsubst %,-L%,$(TOOLCHAIN_LIB_DIRS))
       endif
-      TARGET_PATH:=$(TOOLCHAIN_DIR)/bin:$(TARGET_PATH)
     endif
   endif
 endif
@@ -243,20 +242,13 @@ HOST_CXXFLAGS:=
 HOST_CFLAGS:=-O2 $(HOST_CPPFLAGS)
 HOST_LDFLAGS:=-L$(STAGING_DIR_HOST)/lib $(if $(IS_PACKAGE_BUILD),-L$(STAGING_DIR_HOSTPKG)/lib -L$(STAGING_DIR)/host/lib)
 
-ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
-  TARGET_AR:=$(TARGET_CROSS)gcc-ar
-  TARGET_RANLIB:=$(TARGET_CROSS)gcc-ranlib
-  TARGET_NM:=$(TARGET_CROSS)gcc-nm
-else
-  TARGET_AR:=$(TARGET_CROSS)ar
-  TARGET_RANLIB:=$(TARGET_CROSS)ranlib
-  TARGET_NM:=$(TARGET_CROSS)nm
-endif
-
 BUILD_KEY=$(TOPDIR)/key-build
 
 FAKEROOT:=$(STAGING_DIR_HOST)/bin/fakeroot
 
+TARGET_AR:=$(TARGET_CROSS)gcc-ar
+TARGET_RANLIB:=$(TARGET_CROSS)gcc-ranlib
+TARGET_NM:=$(TARGET_CROSS)gcc-nm
 TARGET_CC:=$(TARGET_CROSS)gcc
 TARGET_CXX:=$(TARGET_CROSS)g++
 KPATCH:=$(SCRIPT_DIR)/patch-kernel.sh
@@ -420,7 +412,7 @@ $(shell \
   if git log -1 >/dev/null 2>/dev/null; then \
     if [ -n "$(1)" ]; then \
       last_bump="$$(git log --pretty=format:'%h %s' . | \
-        grep --max-count=1 -e ': [uU]pdate to ' -e ': [bB]ump to ' | \
+        grep -m 1 -e ': [uU]pdate to ' -e ': [bB]ump to ' | \
         cut -f 1 -d ' ')"; \
     fi; \
     if [ -n "$$last_bump" ]; then \

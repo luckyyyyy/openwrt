@@ -119,16 +119,7 @@ case "$FIRMWARE" in
 	netgear,wnr2200-16m|\
 	pcs,cap324|\
 	tplink,tl-wr2543-v1|\
-	tplink,tl-wr842n-v1|\
-	ubnt,airrouter|\
-	ubnt,bullet-m-ar7240|\
-	ubnt,bullet-m-ar7241|\
-	ubnt,nanobridge-m|\
-	ubnt,nanostation-loco-m|\
-	ubnt,nanostation-m|\
-	ubnt,picostation-m|\
-	ubnt,powerbridge-m|\
-	ubnt,rocket-m)
+	tplink,tl-wr842n-v1)
 		caldata_extract "art" 0x1000 0x1000
 		;;
 	openmesh,mr600-v1|\
@@ -160,7 +151,8 @@ case "$FIRMWARE" in
 	netgear,wndap360)
 		caldata_extract "art" 0x1000 0xeb8
 		;;
-	dlink,dir-825-b1)
+	dlink,dir-825-b1|\
+	trendnet,tew-673gru)
 		caldata_extract "caldata" 0x1000 0xeb8
 		ath9k_patch_mac_crc $(mtd_get_mac_text "caldata" 0xffa0) 0x20c
 		;;
@@ -179,7 +171,8 @@ case "$FIRMWARE" in
 	netgear,wndap360)
 		caldata_extract "art" 0x5000 0xeb8
 		;;
-	dlink,dir-825-b1)
+	dlink,dir-825-b1|\
+	trendnet,tew-673gru)
 		caldata_extract "caldata" 0x5000 0xeb8
 		ath9k_patch_mac_crc $(macaddr_add $(mtd_get_mac_text "caldata" 0xffb4) 1) 0x20c
 		;;

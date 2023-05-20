@@ -74,7 +74,7 @@
  #ifdef CONFIG_SGI_PARTITION
  	sgi_partition,
  #endif
-@@ -694,6 +701,14 @@ static bool blk_add_partition(struct gen
+@@ -701,6 +708,14 @@ static bool blk_add_partition(struct gen
  	    (state->parts[p].flags & ADDPART_FLAG_RAID))
  		md_autodetect_dev(part_to_dev(part)->devt);
  
@@ -151,7 +151,7 @@
  	__le64 signature;
 --- a/drivers/mtd/mtdblock.c
 +++ b/drivers/mtd/mtdblock.c
-@@ -334,7 +334,11 @@ static void mtdblock_remove_dev(struct m
+@@ -338,7 +338,11 @@ static void mtdblock_remove_dev(struct m
  static struct mtd_blktrans_ops mtdblock_tr = {
  	.name		= "mtdblock",
  	.major		= MTD_BLOCK_MAJOR,

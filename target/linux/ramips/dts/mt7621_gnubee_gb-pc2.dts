@@ -27,14 +27,24 @@
 	leds {
 		compatible = "gpio-leds";
 
-		ethblack_act {
-			label = "green:ethblack_act";
+		ethblack-green {
+			label = "green:ethblack";
 			gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
 		};
 
-		ethblue_act {
-			label = "green:ethblue_act";
+		ethblue-green {
+			label = "green:ethblue";
 			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
+		};
+
+		ethyellow-green {
+			label = "green:ethyellow";
+			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
+		};
+
+		ethyellow-orange {
+			label = "orange:ethyellow";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
 		};
 
 		power {
@@ -108,6 +118,7 @@
 &gmac1 {
 	status = "okay";
 	label = "ethyellow";
+	phy-mode = "rgmii-rxid";
 	phy-handle = <&ethphy5>;
 
 	nvmem-cells = <&macaddr_factory_e000>;
@@ -117,7 +128,6 @@
 &mdio {
 	ethphy5: ethernet-phy@5 {
 		reg = <5>;
-		phy-mode = "rgmii-rxid";
 	};
 };
 

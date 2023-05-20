@@ -237,6 +237,18 @@ endef
 $(eval $(call KernelPackage,crypto-echainiv))
 
 
+define KernelPackage/crypto-essiv
+  TITLE:=ESSIV support for block encryption
+  DEPENDS:=+kmod-crypto-authenc
+  KCONFIG:=CONFIG_CRYPTO_ESSIV
+  FILES:= $(LINUX_DIR)/crypto/essiv.ko
+  AUTOLOAD:=$(call AutoLoad,10,essiv)
+  $(call AddDepends/crypto)
+endef
+
+$(eval $(call KernelPackage,crypto-essiv))
+
+
 define KernelPackage/crypto-fcrypt
   TITLE:=FCRYPT cipher CryptoAPI module
   KCONFIG:=CONFIG_CRYPTO_FCRYPT
@@ -862,7 +874,7 @@ define KernelPackage/crypto-sha1/octeon
   AUTOLOAD+=$(call AutoLoad,09,octeon-sha1)
 endef
 
-KernelPackage/crypto-sha1/tegra=$(KernelPakcage/crypto-sha1/arm)
+KernelPackage/crypto-sha1/tegra=$(KernelPackage/crypto-sha1/arm)
 
 define KernelPackage/crypto-sha1/mpc85xx
   FILES+=$(LINUX_DIR)/arch/powerpc/crypto/sha1-ppc-spe.ko
