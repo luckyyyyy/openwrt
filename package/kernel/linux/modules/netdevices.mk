@@ -111,6 +111,7 @@ $(eval $(call KernelPackage,libphy))
 define KernelPackage/phylink
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Model for MAC to optional PHY connection
+  DEPENDS:=+kmod-libphy
   KCONFIG:=CONFIG_PHYLINK
   FILES:=$(LINUX_DIR)/drivers/net/phy/phylink.ko
   AUTOLOAD:=$(call AutoLoad,15,phylink,1)
@@ -141,7 +142,7 @@ $(eval $(call KernelPackage,mii))
 define KernelPackage/mdio-devres
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Supports MDIO device registration
-  DEPENDS:=@LINUX_5_10 +kmod-libphy PACKAGE_kmod-of-mdio:kmod-of-mdio
+  DEPENDS:=@(LINUX_5_10||LINUX_5_15||LINUX_6_1) +kmod-libphy +(TARGET_armvirt||TARGET_bcm27xx_bcm2708||TARGET_tegra):kmod-of-mdio
   KCONFIG:=CONFIG_MDIO_DEVRES
   HIDDEN:=1
   FILES:=$(LINUX_DIR)/drivers/net/phy/mdio_devres.ko
@@ -340,6 +341,22 @@ define KernelPackage/phy-smsc/description
 endef
 
 $(eval $(call KernelPackage,phy-smsc))
+
+
+define KernelPackage/phy-aquantia
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Aquantia Ethernet PHYs
+  DEPENDS:=+kmod-libphy +kmod-hwmon-core
+  KCONFIG:=CONFIG_AQUANTIA_PHY
+  FILES:=$(LINUX_DIR)/drivers/net/phy/aquantia.ko
+  AUTOLOAD:=$(call AutoLoad,18,aquantia,1)
+endef
+
+define KernelPackage/phy-aquantia/description
+  Kernel modules for Aquantia Ethernet PHYs
+endef
+
+$(eval $(call KernelPackage,phy-aquantia))
 
 
 define KernelPackage/swconfig
@@ -644,7 +661,7 @@ $(eval $(call KernelPackage,8139cp))
 define KernelPackage/r8169
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=RealTek RTL-8169 PCI Gigabit Ethernet Adapter kernel support
-  DEPENDS:=@PCI_SUPPORT +kmod-mii +r8169-firmware +kmod-phy-realtek +LINUX_5_10:kmod-mdio-devres
+  DEPENDS:=@PCI_SUPPORT +kmod-mii +r8169-firmware +kmod-phy-realtek +(LINUX_5_10||LINUX_5_15||LINUX_6_1):kmod-mdio-devres
   KCONFIG:= \
     CONFIG_R8169 \
     CONFIG_R8169_NAPI=y \
@@ -770,7 +787,7 @@ $(eval $(call KernelPackage,igbvf))
 define KernelPackage/ixgbe
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Intel(R) 82598/82599 PCI-Express 10 Gigabit Ethernet support
-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-hwmon-core +kmod-libphy +LINUX_5_10:kmod-mdio-devres
+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-hwmon-core +kmod-libphy +(LINUX_5_10||LINUX_5_15||LINUX_6_1):kmod-mdio-devres
   KCONFIG:=CONFIG_IXGBE \
     CONFIG_IXGBE_VXLAN=n \
     CONFIG_IXGBE_HWMON=y \
@@ -1123,8 +1140,8 @@ define KernelPackage/of-mdio
   DEPENDS:=+kmod-libphy +kmod-fixed-phy @!TARGET_x86
   KCONFIG:=CONFIG_OF_MDIO
   FILES:= \
-	$(LINUX_DIR)/drivers/of/of_mdio.ko@lt5.10 \
-	$(LINUX_DIR)/drivers/net/mdio/of_mdio.ko@ge5.10
+	$(LINUX_DIR)/drivers/net/mdio/of_mdio.ko \
+	$(LINUX_DIR)/drivers/net/mdio/fwnode_mdio.ko@ge5.15
   AUTOLOAD:=$(call AutoLoad,41,of_mdio)
 endef
 
@@ -1217,6 +1234,26 @@ endef
 
 $(eval $(call KernelPackage,bnx2x))
 
+define KernelPackage/bnxt-en
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=BCM 574xx/575xx 10/25/50-Gigabit ethernet adapter driver
+  DEPENDS:=@PCI_SUPPORT  +kmod-lib-crc32c +kmod-mdio +kmod-ptp +kmod-lib-zlib-inflate +kmod-hwmon-core
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/broadcom/bnxt/bnxt_en.ko
+  KCONFIG:= \
+	CONFIG_BNXT \
+	CONFIG_BNXT_SRIOV=y \
+  	CONFIG_BNXT_FLOWER_OFFLOAD=y \
+  	CONFIG_BNXT_DCB=n \
+  	CONFIG_BNXT_HWMON=y
+  AUTOLOAD:=$(call AutoProbe,bnxt_en)
+endef
+
+define KernelPackage/bnxt-en/description
+  Broadcom 573xx/574xx/575xx 10/25/40/50-Gigabit ethernet adapter Driver
+endef
+
+$(eval $(call KernelPackage,bnxt-en))
+
 define KernelPackage/be2net
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
@@ -1290,6 +1327,22 @@ endef
 $(eval $(call KernelPackage,mlx5-core))
 
 
+define KernelPackage/net-selftests
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  DEPENDS:=+kmod-libphy
+  TITLE:=Network generic selftest support
+  KCONFIG:=CONFIG_NET_SELFTESTS
+  FILES:=$(LINUX_DIR)/net/core/selftests.ko
+  AUTOLOAD:=$(call AutoLoad,99,selftests)
+endef
+
+define KernelPackage/net-selftests/description
+  Kernel modules for the generic selftest support
+endef
+
+$(eval $(call KernelPackage,net-selftests))
+
+
 define KernelPackage/qlcnic
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   DEPENDS:=@PCI_SUPPORT +kmod-hwmon-core
@@ -1308,6 +1361,26 @@ define KernelPackage/qlcnic/description
 endef
 
 $(eval $(call KernelPackage,qlcnic))
+
+define KernelPackage/qede
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp
+  TITLE:=QLogic FastLinQ 10/25/40/100Gb Ethernet NIC device support
+  KCONFIG:= \
+	CONFIG_NET_VENDOR_QLOGIC \
+	CONFIG_QED=y \
+	CONFIG_QED_SRIOV=y \
+	CONFIG_QEDE=y
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/qlogic/qede/qede.ko
+  AUTOLOAD:=$(call AutoProbe,qede)
+endef
+
+define KernelPackage/qede/description
+  This driver supports QLogic FastLinQ 25/40/100Gb Ethernet NIC
+  devices.
+endef
+
+$(eval $(call KernelPackage,qede))
 
 
 define KernelPackage/sfp
@@ -1344,6 +1417,21 @@ define KernelPackage/igc/description
 endef
 
 $(eval $(call KernelPackage,igc))
+
+define KernelPackage/ice
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Intel(R) Ethernet Controller E810 Series support
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp
+  KCONFIG:=CONFIG_ICE
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
+  AUTOLOAD:=$(call AutoProbe,ice)
+endef
+
+define KernelPackage/ice/description
+  Kernel modules for Intel(R) Ethernet Controller E810 Series
+endef
+
+$(eval $(call KernelPackage,ice))
 
 define KernelPackage/sfc
   SUBMENU:=$(NETWORK_DEVICES_MENU)
@@ -1382,3 +1470,114 @@ define KernelPackage/sfc-falcon/description
 endef
 
 $(eval $(call KernelPackage,sfc-falcon))
+
+
+define KernelPackage/wwan
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=WWAN Driver Core
+  DEPENDS:=@(LINUX_5_15||LINUX_6_1)
+  KCONFIG:=CONFIG_WWAN
+  FILES:=$(LINUX_DIR)/drivers/net/wwan/wwan.ko
+  AUTOLOAD:=$(call AutoProbe,wwan)
+endef
+
+define KernelPackage/wwan/description
+ his driver provides a common framework for WWAN drivers.
+endef
+
+$(eval $(call KernelPackage,wwan))
+
+
+define KernelPackage/mhi-net
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=MHI Network Device
+  DEPENDS:=@(LINUX_5_15||LINUX_6_1) @PCI_SUPPORT +kmod-mhi-bus
+  KCONFIG:=CONFIG_MHI_NET
+  FILES:=$(LINUX_DIR)/drivers/net/mhi_net.ko
+  AUTOLOAD:=$(call AutoProbe,mhi_net)
+endef
+
+define KernelPackage/mhi-net/description
+ Driver for MHI network interface
+endef
+
+$(eval $(call KernelPackage,mhi-net))
+
+define KernelPackage/mhi-wwan-ctrl
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=MHI WWAN Control
+  DEPENDS:=@PCI_SUPPORT +kmod-mhi-bus +kmod-wwan
+  KCONFIG:=CONFIG_MHI_WWAN_CTRL
+  FILES:=$(LINUX_DIR)/drivers/net/wwan/mhi_wwan_ctrl.ko
+  AUTOLOAD:=$(call AutoProbe,mhi_wwan_ctrl)
+endef
+
+define KernelPackage/mhi-wwan-ctrl/description
+ Driver for MHI WWAN Control
+ This exposes all modem control ports like AT, MBIM, QMI, DIAG, ..
+endef
+
+$(eval $(call KernelPackage,mhi-wwan-ctrl))
+
+define KernelPackage/mhi-wwan-mbim
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=MHI MBIM
+  DEPENDS:=@PCI_SUPPORT +kmod-mhi-bus +kmod-wwan
+  KCONFIG:=CONFIG_MHI_WWAN_MBIM
+  FILES:=$(LINUX_DIR)/drivers/net/wwan/mhi_wwan_mbim.ko
+  AUTOLOAD:=$(call AutoProbe,mhi_wwan_mbim)
+endef
+
+define KernelPackage/mhi-wwan-mbim/description
+ Driver for MHI MBIM
+ This implements MBIM over MHI
+endef
+
+$(eval $(call KernelPackage,mhi-wwan-mbim))
+
+define KernelPackage/atlantic
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Aquantia AQtion 10Gbps Ethernet NIC
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-hwmon-core +kmod-macsec
+  KCONFIG:=CONFIG_AQTION
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/aquantia/atlantic/atlantic.ko
+  AUTOLOAD:=$(call AutoProbe,atlantic)
+endef
+
+define KernelPackage/atlantic/description
+  Kernel modules for Aquantia AQtion 10Gbps Ethernet NIC
+endef
+
+$(eval $(call KernelPackage,atlantic))
+
+define KernelPackage/amazon-ena
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Elastic Network Adapter (for Amazon AWS)
+  DEPENDS:=@TARGET_x86_64||TARGET_armvirt_64
+  KCONFIG:=CONFIG_ENA_ETHERNET
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/amazon/ena/ena.ko
+  AUTOLOAD:=$(call AutoLoad,12,ena)
+endef
+
+define KernelPackage/amazon-ena/description
+  This driver supports Elastic Network Adapter (ENA)
+  used by Amazon AWS T3 (2018) and later instances.
+endef
+
+$(eval $(call KernelPackage,amazon-ena))
+
+define KernelPackage/lan743x
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Microchip LAN743x PCI Express Gigabit Ethernet NIC
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-mdio-devres
+  KCONFIG:=CONFIG_LAN743X
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/microchip/lan743x.ko
+  AUTOLOAD:=$(call AutoProbe,lan743x)
+endef
+
+define KernelPackage/lan743x/description
+  Kernel module for Microchip LAN743x PCI Express Gigabit Ethernet NIC
+endef
+
+$(eval $(call KernelPackage,lan743x))
+

@@ -24,13 +24,6 @@ cudy,wr1000)
 	ucidef_set_led_switch "lan1" "lan1" "blue:lan1" "switch0" "0x08"
 	ucidef_set_led_switch "lan2" "lan2" "blue:lan2" "switch0" "0x04"
 	;;
-dlink,dap-1325-a1)
-	ucidef_set_rssimon "wlan0" "200000" "1"
-	ucidef_set_led_rssi "wifi-verylow" "wifi-verylow" "red:wifi-verylow" "wlan0" "1" "24"
-	ucidef_set_led_rssi "wifi-low" "wifi-low" "green:wifi-low" "wlan0" "25" "100"
-	ucidef_set_led_rssi "wifi-med" "wifi-med" "green:wifi-mid" "wlan0" "50" "100"
-	ucidef_set_led_rssi "wifi-high" "wifi-high" "green:wifi-high" "wlan0" "75" "100"
-	;;
 elecom,wrc-1167fs)
 	ucidef_set_led_switch "lan" "lan" "green:lan" "switch0" "0x8"
 	ucidef_set_led_switch "internet" "internet" "green:internet" "switch0" "0x10"
@@ -47,7 +40,7 @@ hilink,hlk-7688a)
 	ucidef_set_led_wlan "wlan" "WLAN" "green:wlan" "phy0tpt"
 	;;
 hiwifi,hc5611)
-	ucidef_set_led_default "system" "system" "$boardname:blue:system" "1"
+	ucidef_set_led_netdev "internet" "internet" "red:internet" "br-lan" "tx rx"
 	;;
 hiwifi,hc5661a|\
 hiwifi,hc5761a)
@@ -139,13 +132,17 @@ wavlink,wl-wn575a3)
 	ucidef_set_led_rssi "wifi-med" "wifi-med" "green:wifi-med" "wlan1" "50" "84"
 	ucidef_set_led_rssi "wifi-high" "wifi-high" "green:wifi-high" "wlan1" "85" "100"
 	;;
-wavlink,wl-wn576a2)
-	ucidef_set_led_switch "lan" "lan" "blue:lan" "switch0" "0x10"
-	;;
 wavlink,wl-wn577a2|\
 wavlink,wl-wn578a2)
 	ucidef_set_led_switch "lan" "lan" "green:lan" "switch0" "0x8"
 	ucidef_set_led_switch "wan" "wan" "green:wan" "switch0" "0x10"
+	;;
+xiaomi,mi-router-4a-100m|\
+xiaomi,mi-router-4a-100m-intl)
+	ucidef_set_led_switch "wan" "WAN" "blue:wan" "switch0" "0x01"
+	;;
+xiaomi,mi-router-4c)
+	ucidef_set_led_switch "wan" "WAN" "blue:wan" "switch0" "0x02"
 	;;
 zbtlink,zbt-we1226)
 	ucidef_set_led_netdev "wifi_led" "wifi" "green:wlan" "wlan0"

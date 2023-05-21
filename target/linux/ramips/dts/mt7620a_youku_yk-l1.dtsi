@@ -15,7 +15,7 @@
 	leds {
 		compatible = "gpio-leds";
 
-		wlan {
+		led_wlan: wlan {
 			label = "blue:wlan";
 			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
@@ -56,7 +56,7 @@
 &spi0 {
 	status = "okay";
 
-	flash0: flash@0 {
+	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <80000000>;
@@ -106,18 +106,13 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&ephy_pins>;
 
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 
 	mediatek,portmap = "llllw";
 };
 
 &wmac {
 	ralink,mtd-eeprom = <&factory 0x0>;
-
-	pinctrl-names = "default", "pa_gpio";
-	pinctrl-0 = <&pa_pins>;
-	pinctrl-1 = <&pa_gpio_pins>;
 };
 
 &sdhci {
@@ -130,14 +125,4 @@
 
 &ohci {
 	status = "okay";
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_28: macaddr@28 {
-		reg = <0x28 0x6>;
-	};
 };

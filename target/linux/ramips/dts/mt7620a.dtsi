@@ -419,7 +419,7 @@
 				function = "pa";
 			};
 		};
-
+		
 		pa_gpio_pins: pa_gpio {
 			pa {
 				groups = "pa";

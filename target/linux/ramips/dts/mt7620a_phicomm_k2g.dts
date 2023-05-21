@@ -23,6 +23,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&rgmii2_pins &mdio_pins>;
 
+	mtd-mac-address = <&factory 0x28>;
+
 	mediatek,portmap = "llllw";
 
 	port@5 {
@@ -42,7 +44,6 @@
 };
 
 &wmac {
-	pinctrl-names = "default", "pa_gpio";
+	pinctrl-names = "default";
 	pinctrl-0 = <&pa_pins>;
-	pinctrl-1 = <&pa_gpio_pins>;
 };

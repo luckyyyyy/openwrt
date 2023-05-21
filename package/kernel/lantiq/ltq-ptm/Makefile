@@ -24,9 +24,9 @@ define KernelPackage/ltq-ptm-template
   VARIANT:=$(1)
   DEPENDS:=@TARGET_lantiq_$(2)
 ifeq ($(1),vr9)
-  DEPENDS+= +PACKAGE_kmod-ltq-ptm-$(1):kmod-ltq-vdsl-vr9-mei
+  DEPENDS+= +kmod-ltq-vdsl-vr9-mei
 else
-  DEPENDS+= +PACKAGE_kmod-ltq-ptm-$(1):kmod-ltq-adsl-$(1)-mei
+  DEPENDS+= +kmod-ltq-adsl-$(1)-mei
 endif
 ifeq ($(1),ase)
   DEPENDS+=@BROKEN

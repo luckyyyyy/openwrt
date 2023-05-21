@@ -1,9 +1,9 @@
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
 @@ -61,6 +61,9 @@ struct br_ip_list {
-
+ 
  extern void brioctl_set(int (*ioctl_hook)(struct net *, unsigned int, void __user *));
-
+ 
 +extern void br_dev_update_stats(struct net_device *dev,
 +				struct rtnl_link_stats64 *nlstats);
 +
@@ -12,10 +12,10 @@
  			       struct list_head *br_ip_list);
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -860,6 +860,10 @@ struct sk_buff {
- #endif
+@@ -865,6 +865,10 @@ struct sk_buff {
+ 	__u8			scm_io_uring:1;
  	__u8			gro_skip:1;
-
+ 
 +#ifdef CONFIG_SHORTCUT_FE
 +	__u8			fast_forwarded:1;
 +#endif
@@ -28,7 +28,7 @@
 @@ -18,6 +18,10 @@ struct timer_list {
  	void			(*function)(struct timer_list *);
  	u32			flags;
-
+ 
 +#ifdef CONFIG_SHORTCUT_FE
 +	unsigned long		cust_data;
 +#endif
@@ -52,7 +52,7 @@
 @@ -779,6 +779,28 @@ void br_port_flags_change(struct net_bri
  		br_recalculate_neigh_suppress_enabled(br);
  }
-
+ 
 +void br_dev_update_stats(struct net_device *dev,
 +			 struct rtnl_link_stats64 *nlstats)
 +{
@@ -80,7 +80,7 @@
  	struct net_bridge_port *p;
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3650,9 +3650,17 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3652,9 +3652,17 @@ static int xmit_one(struct sk_buff *skb,
  {
  	unsigned int len;
  	int rc;
@@ -96,13 +96,13 @@
 +#ifdef CONFIG_SHORTCUT_FE
 +	}
 +#endif
-
+ 
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (dev->eth_mangle_tx && !(skb = dev->eth_mangle_tx(dev, skb)))
-@@ -5204,6 +5212,11 @@ void netdev_rx_handler_unregister(struct
+@@ -5206,6 +5214,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
-
+ 
 +#ifdef CONFIG_SHORTCUT_FE
 +int (*athrs_fast_nat_recv)(struct sk_buff *skb) __rcu __read_mostly;
 +EXPORT_SYMBOL_GPL(athrs_fast_nat_recv);
@@ -111,21 +111,21 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -5252,6 +5265,10 @@ static int __netif_receive_skb_core(stru
+@@ -5254,6 +5267,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
-
+ 
 +#ifdef CONFIG_SHORTCUT_FE
 +	int (*fast_recv)(struct sk_buff *skb);
 +#endif
 +
  	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
-
+ 
  	trace_netif_receive_skb(skb);
-@@ -5291,6 +5308,15 @@ another_round:
+@@ -5293,6 +5310,15 @@ another_round:
  			goto out;
  	}
-
+ 
 +#ifdef CONFIG_SHORTCUT_FE
 +	fast_recv = rcu_dereference(athrs_fast_nat_recv);
 +	if (fast_recv) {
@@ -137,7 +137,7 @@
 +#endif
  	if (skb_skip_tc_classify(skb))
  		goto skip_classify;
-
+ 
 --- a/net/Kconfig
 +++ b/net/Kconfig
 @@ -481,3 +481,6 @@ config HAVE_CBPF_JIT
@@ -152,7 +152,7 @@
 @@ -34,11 +34,19 @@
  /* Do not check the TCP window for incoming packets  */
  static int nf_ct_tcp_no_window_check __read_mostly = 1;
-
+ 
 +#ifdef CONFIG_SHORTCUT_FE
 +EXPORT_SYMBOL_GPL(nf_ct_tcp_no_window_check);
 +#endif
@@ -161,7 +161,7 @@
      be liberal in what you accept from others."
      If it's non-zero, we mark only out of window RST segments as INVALID. */
  static int nf_ct_tcp_be_liberal __read_mostly = 0;
-
+ 
 +#ifdef CONFIG_SHORTCUT_FE
 +EXPORT_SYMBOL_GPL(nf_ct_tcp_be_liberal);
 +#endif
@@ -172,7 +172,7 @@
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
 @@ -171,7 +171,11 @@ int nf_conntrack_eventmask_report(unsign
-
+ 
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
@@ -181,12 +181,12 @@
  	if (!notify)
 +#endif
  		goto out_unlock;
-
+ 
  	e = nf_ct_ecache_find(ct);
 @@ -190,7 +194,14 @@ int nf_conntrack_eventmask_report(unsign
  		if (!((eventmask | missed) & e->ctmask))
  			goto out_unlock;
-
+ 
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
 +		ret = atomic_notifier_call_chain(&net->ct.nf_conntrack_chain,
 +			eventmask | missed, &item);
@@ -199,7 +199,7 @@
  			spin_lock_bh(&ct->lock);
  			if (ret < 0) {
 @@ -272,7 +283,11 @@ void nf_ct_deliver_cached_events(struct
-
+ 
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
@@ -208,12 +208,12 @@
  	if (notify == NULL)
 +#endif
  		goto out_unlock;
-
+ 
  	if (!nf_ct_is_confirmed(ct) || nf_ct_is_dying(ct))
 @@ -296,7 +311,15 @@ void nf_ct_deliver_cached_events(struct
  	item.portid = 0;
  	item.report = 0;
-
+ 
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
 +	ret = atomic_notifier_call_chain(&net->ct.nf_conntrack_chain,
 +			events | missed,
@@ -223,7 +223,7 @@
 +#else
  	ret = notify->fcn(events | missed, &item);
 +#endif
-
+ 
  	if (likely(ret == 0 && !missed))
  		goto out_unlock;
 @@ -350,6 +373,11 @@ int nf_conntrack_register_notifier(struc

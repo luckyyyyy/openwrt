@@ -71,6 +71,25 @@ define Device/aerohive_hiveap-121
 endef
 TARGET_DEVICES += aerohive_hiveap-121
 
+define Device/arris_sbr-ac1750
+  SOC := qca9558
+  DEVICE_VENDOR := Arris
+  DEVICE_MODEL := SBR-AC1750
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  KERNEL_SIZE := 4096k
+  BLOCKSIZE := 128k
+  IMAGE_SIZE := 32m
+  PAGESIZE := 2048
+  KERNEL := kernel-bin | append-dtb | gzip | uImage gzip
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | uImage none
+  IMAGES += kernel1.bin rootfs1.bin
+  IMAGE/kernel1.bin := append-kernel | check-size $$$$(KERNEL_SIZE)
+  IMAGE/rootfs1.bin := append-ubi | check-size
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  UBINIZE_OPTS := -E 5
+endef
+TARGET_DEVICES += arris_sbr-ac1750
+
 define Device/domywifi_dw33d
   SOC := qca9558
   DEVICE_VENDOR := DomyWifi
@@ -199,8 +218,7 @@ define Device/glinet_gl-xe300
   SOC := qca9531
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := GL-XE300
-  DEVICE_PACKAGES := kmod-usb2 block-mount kmod-usb-serial-ch341 \
-	kmod-usb-net-qmi-wwan uqmi
+  DEVICE_PACKAGES := kmod-usb2 block-mount kmod-usb-serial-ch341
   KERNEL_SIZE := 4096k
   IMAGE_SIZE := 131072k
   PAGESIZE := 2048
@@ -211,25 +229,6 @@ define Device/glinet_gl-xe300
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += glinet_gl-xe300
-
-define Device/linksys_ea4500-v3
-  SOC := qca9558
-  DEVICE_VENDOR := Linksys
-  DEVICE_MODEL := EA4500
-  DEVICE_VARIANT := v3
-  DEVICE_PACKAGES := kmod-usb2
-  BLOCKSIZE := 128k
-  PAGESIZE := 2048
-  KERNEL_SIZE := 4096k
-  IMAGE_SIZE := 81920k
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  LINKSYS_HWNAME := EA4500V3
-  IMAGES += factory.img
-  IMAGE/factory.img := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
-	append-ubi | check-size | linksys-image type=$$$$(LINKSYS_HWNAME)
-  UBINIZE_OPTS := -E 5
-endef
-TARGET_DEVICES += linksys_ea4500-v3
 
 # fake rootfs is mandatory, pad-offset 129 equals (2 * uimage_header + 0xff)
 define Device/netgear_ath79_nand
@@ -325,7 +324,7 @@ define Device/netgear_wndr4500-v3
 endef
 TARGET_DEVICES += netgear_wndr4500-v3
 
-define Device/zte_mf28x_common
+define Device/zte_mf286_common
   SOC := qca9563
   DEVICE_VENDOR := ZTE
   DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct
@@ -335,21 +334,8 @@ define Device/zte_mf28x_common
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 
-define Device/zte_mf281
-  $(Device/zte_mf28x_common)
-  DEVICE_MODEL := MF281
-  KERNEL_SIZE := 6144k
-  IMAGE_SIZE := 29696k
-  IMAGES += factory.bin
-  IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | \
-	check-size
-  DEVICE_PACKAGES += ath10k-firmware-qca9888-ct kmod-usb-net-rndis \
-	kmod-usb-acm comgt-ncm
-endef
-TARGET_DEVICES += zte_mf281
-
 define Device/zte_mf286
-  $(Device/zte_mf28x_common)
+  $(Device/zte_mf286_common)
   DEVICE_MODEL := MF286
   DEVICE_PACKAGES += ath10k-firmware-qca988x-ct kmod-usb-net-qmi-wwan \
 	kmod-usb-serial-option uqmi
@@ -357,7 +343,7 @@ endef
 TARGET_DEVICES += zte_mf286
 
 define Device/zte_mf286a
-  $(Device/zte_mf28x_common)
+  $(Device/zte_mf286_common)
   DEVICE_MODEL := MF286A
   DEVICE_PACKAGES += ath10k-firmware-qca9888-ct kmod-usb-net-qmi-wwan \
 	kmod-usb-serial-option uqmi
@@ -365,10 +351,9 @@ endef
 TARGET_DEVICES += zte_mf286a
 
 define Device/zte_mf286r
-  $(Device/zte_mf28x_common)
+  $(Device/zte_mf286_common)
   DEVICE_MODEL := MF286R
-  DEVICE_PACKAGES += ath10k-firmware-qca9888-ct kmod-usb-net-rndis kmod-usb-acm \
-	comgt-ncm
+  DEVICE_PACKAGES += ath10k-firmware-qca9888-ct kmod-usb-net-rndis kmod-usb-acm
 endef
 TARGET_DEVICES += zte_mf286r
 

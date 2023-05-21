@@ -120,7 +120,6 @@ endef
 TARGET_DEVICES += allnet_all5002
 
 define Device/allnet_all5003
-  $(Device/uimage-lzma-loader)
   SOC := rt5350
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := Allnet
@@ -434,7 +433,6 @@ endef
 TARGET_DEVICES += dlink_dir-615-d
 
 define Device/dlink_dir-615-h1
-  $(Device/uimage-lzma-loader)
   SOC := rt3352
   BLOCKSIZE := 4k
   IMAGES += factory.bin
@@ -991,6 +989,7 @@ define Device/teltonika_rut5xx
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Teltonika
   DEVICE_MODEL := RUT5XX
+  DEVICE_PACKAGES := om-watchdog
   SUPPORTED_DEVICES += rut5xx
 endef
 TARGET_DEVICES += teltonika_rut5xx
@@ -1072,7 +1071,7 @@ define Device/unbranded_a5-v11
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	poray-header -B A5-V11 -F 4M
-  DEVICE_VENDOR := Unbranded
+  DEVICE_VENDOR :=
   DEVICE_MODEL := A5-V11
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2
   SUPPORTED_DEVICES += a5-v11
@@ -1083,7 +1082,7 @@ TARGET_DEVICES += unbranded_a5-v11
 define Device/unbranded_wr512-3gn-4m
   SOC := rt3052
   IMAGE_SIZE := 3776k
-  DEVICE_VENDOR := Unbranded
+  DEVICE_VENDOR := Ralink
   DEVICE_MODEL := WR512-3GN
   DEVICE_VARIANT := 4M
   SUPPORTED_DEVICES += wr512-3gn-4M
@@ -1094,7 +1093,7 @@ TARGET_DEVICES += unbranded_wr512-3gn-4m
 define Device/unbranded_wr512-3gn-8m
   SOC := rt3052
   IMAGE_SIZE := 7872k
-  DEVICE_VENDOR := Unbranded
+  DEVICE_VENDOR := Ralink
   DEVICE_MODEL := WR512-3GN
   DEVICE_VARIANT := 8M
   SUPPORTED_DEVICES += wr512-3gn-8M
@@ -1105,8 +1104,8 @@ define Device/unbranded_xdx-rn502j
   SOC := rt3052
   BLOCKSIZE := 64k
   IMAGE_SIZE := 3776k
-  DEVICE_VENDOR := Unbranded
-  DEVICE_MODEL := XDX-RN502J
+  DEVICE_VENDOR := XDX
+  DEVICE_MODEL := RN502J
   SUPPORTED_DEVICES += xdxrn502j
   DEFAULT := n
 endef
@@ -1238,7 +1237,6 @@ endef
 TARGET_DEVICES += zyxel_nbg-419n
 
 define Device/zyxel_nbg-419n-v2
-  $(Device/uimage-lzma-loader)
   SOC := rt3352
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := ZyXEL

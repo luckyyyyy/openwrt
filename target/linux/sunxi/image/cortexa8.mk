@@ -23,7 +23,7 @@ define Device/marsboard_a10-marsboard
   DEVICE_VENDOR := HAOYU Electronics
   DEVICE_MODEL := MarsBoard A10
   DEVICE_PACKAGES:=kmod-ata-core kmod-ata-sunxi kmod-sun4i-emac \
-	kmod-rtc-sunxi kmod-sound-core kmod-sound-soc-sunxi
+	kmod-rtc-sunxi kmod-sound-soc-sunxi
   SOC := sun4i
 endef
 TARGET_DEVICES += marsboard_a10-marsboard

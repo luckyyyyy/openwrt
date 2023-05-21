@@ -30,7 +30,9 @@ $(eval $(call KernelPackage,6lowpan))
 define KernelPackage/bluetooth
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Bluetooth support
-  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-crypto-hash +kmod-crypto-ecb +kmod-lib-crc16 +kmod-hid +kmod-crypto-cmac +kmod-regmap-core +kmod-crypto-ecdh
+  DEPENDS:=@USB_SUPPORT +kmod-crypto-cmac +kmod-crypto-ecb \
+	+kmod-crypto-ecdh +kmod-crypto-hash +kmod-hid +kmod-lib-crc16 \
+	+kmod-regmap-core +kmod-serdev +kmod-usb-core
   KCONFIG:= \
 	CONFIG_BT \
 	CONFIG_BT_BREDR=y \
@@ -39,12 +41,16 @@ define KernelPackage/bluetooth
 	CONFIG_BT_RFCOMM \
 	CONFIG_BT_BNEP \
 	CONFIG_BT_HCIBTUSB \
-	CONFIG_BT_HCIBTUSB_BCM=n \
+	CONFIG_BT_HCIBTUSB_BCM=y \
+	CONFIG_BT_HCIBTUSB_MTK=y \
+	CONFIG_BT_HCIBTUSB_RTL=y \
 	CONFIG_BT_HCIUART \
-	CONFIG_BT_HCIUART_BCM=n \
+	CONFIG_BT_HCIUART_BCM=y \
 	CONFIG_BT_HCIUART_INTEL=n \
 	CONFIG_BT_HCIUART_H4 \
 	CONFIG_BT_HCIUART_NOKIA=n \
+	CONFIG_BT_HCIUART_QCA=y \
+	CONFIG_BT_HCIUART_SERDEV=y \
 	CONFIG_BT_HIDP
   $(call AddDepends/rfkill)
   FILES:= \
@@ -54,7 +60,11 @@ define KernelPackage/bluetooth
 	$(LINUX_DIR)/net/bluetooth/hidp/hidp.ko \
 	$(LINUX_DIR)/drivers/bluetooth/hci_uart.ko \
 	$(LINUX_DIR)/drivers/bluetooth/btusb.ko \
-	$(LINUX_DIR)/drivers/bluetooth/btintel.ko
+	$(LINUX_DIR)/drivers/bluetooth/btbcm.ko \
+	$(LINUX_DIR)/drivers/bluetooth/btqca.ko \
+	$(LINUX_DIR)/drivers/bluetooth/btrtl.ko \
+	$(LINUX_DIR)/drivers/bluetooth/btintel.ko \
+	$(LINUX_DIR)/drivers/bluetooth/btmtk.ko@ge5.17
   AUTOLOAD:=$(call AutoProbe,bluetooth rfcomm bnep hidp hci_uart btusb)
 endef
 
@@ -71,6 +81,7 @@ define KernelPackage/ath3k
   KCONFIG:= \
 	CONFIG_BT_ATH3K \
 	CONFIG_BT_HCIUART_ATH3K=y
+  $(call AddDepends/bluetooth)
   FILES:= \
 	$(LINUX_DIR)/drivers/bluetooth/ath3k.ko
   AUTOLOAD:=$(call AutoProbe,ath3k)
@@ -106,6 +117,7 @@ define KernelPackage/btmrvl
   KCONFIG:= \
 	CONFIG_BT_MRVL \
 	CONFIG_BT_MRVL_SDIO
+  $(call AddDepends/bluetooth)
   FILES:= \
 	$(LINUX_DIR)/drivers/bluetooth/btmrvl.ko \
 	$(LINUX_DIR)/drivers/bluetooth/btmrvl_sdio.ko
@@ -117,24 +129,6 @@ define KernelPackage/btmrvl/description
 endef
 
 $(eval $(call KernelPackage,btmrvl))
-
-
-define KernelPackage/btsdio
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Bluetooth HCI SDIO driver
-  DEPENDS:=+kmod-bluetooth +kmod-mmc
-  KCONFIG:= \
-	CONFIG_BT_HCIBTSDIO
-  FILES:= \
-	$(LINUX_DIR)/drivers/bluetooth/btsdio.ko
-  AUTOLOAD:=$(call AutoProbe,btsdio)
-endef
-
-define KernelPackage/btsdio/description
- Kernel support for Bluetooth device with SDIO interface
-endef
-
-$(eval $(call KernelPackage,btsdio))
 
 
 define KernelPackage/dma-buf
@@ -375,6 +369,7 @@ define KernelPackage/mmc
 	CONFIG_MMC_BLOCK \
 	CONFIG_MMC_DEBUG=n \
 	CONFIG_MMC_UNSAFE_RESUME=n \
+	CONFIG_MMC_BLOCK_BOUNCE=y \
 	CONFIG_MMC_TIFM_SD=n \
 	CONFIG_MMC_WBSD=n \
 	CONFIG_SDIO_UART=n
@@ -413,17 +408,35 @@ endef
 $(eval $(call KernelPackage,sdhci))
 
 
+define KernelPackage/serdev
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Serial device bus support
+  KCONFIG:=CONFIG_SERIAL_DEV_BUS
+  FILES:= \
+	$(LINUX_DIR)/drivers/tty/serdev/serdev.ko
+  AUTOLOAD:=$(call AutoProbe,serdev)
+endef
+
+define KernelPackage/serdev/description
+ Kernel support for devices connected via a serial port
+endef
+
+$(eval $(call KernelPackage,serdev))
+
+
 define KernelPackage/rfkill
   SUBMENU:=$(OTHER_MENU)
   TITLE:=RF switch subsystem support
   DEPENDS:=@USE_RFKILL +kmod-input-core
   KCONFIG:= \
     CONFIG_RFKILL_FULL \
+    CONFIG_RFKILL_GPIO=y \
     CONFIG_RFKILL_INPUT=y \
     CONFIG_RFKILL_LEDS=y
   FILES:= \
-    $(LINUX_DIR)/net/rfkill/rfkill.ko
-  AUTOLOAD:=$(call AutoLoad,20,rfkill)
+    $(LINUX_DIR)/net/rfkill/rfkill.ko \
+    $(LINUX_DIR)/net/rfkill/rfkill-gpio.ko
+  AUTOLOAD:=$(call AutoLoad,20,rfkill-gpio)
 endef
 
 define KernelPackage/rfkill/description
@@ -647,6 +660,22 @@ endef
 
 $(eval $(call KernelPackage,rtc-pcf2127))
 
+define KernelPackage/rtc-pt7c4338
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Pericom PT7C4338 RTC support
+  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+  DEPENDS:=+kmod-i2c-core
+  KCONFIG:=CONFIG_RTC_DRV_PT7C4338 \
+	CONFIG_RTC_CLASS=y
+  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-pt7c4338.ko
+  AUTOLOAD:=$(call AutoProbe,rtc-pt7c4338)
+endef
+
+define KernelPackage/rtc-pt7c4338/description
+ Kernel module for Pericom PT7C4338 i2c RTC chip
+endef
+
+$(eval $(call KernelPackage,rtc-pt7c4338))
 
 define KernelPackage/rtc-rs5c372a
   SUBMENU:=$(OTHER_MENU)
@@ -750,41 +779,6 @@ define KernelPackage/mtdram/description
 endef
 
 $(eval $(call KernelPackage,mtdram))
-
-
-define KernelPackage/ramoops
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Ramoops (pstore-ram)
-  DEFAULT:=m if ALL_KMODS
-  KCONFIG:=CONFIG_PSTORE_RAM
-  DEPENDS:=+kmod-pstore +kmod-reed-solomon
-  FILES:= $(LINUX_DIR)/fs/pstore/ramoops.ko
-  AUTOLOAD:=$(call AutoLoad,30,ramoops,1)
-endef
-
-define KernelPackage/ramoops/description
- Kernel module for pstore-ram (ramoops) crash log storage
-endef
-
-$(eval $(call KernelPackage,ramoops))
-
-
-define KernelPackage/reed-solomon
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Reed-Solomon error correction
-  DEFAULT:=m if ALL_KMODS
-  KCONFIG:=CONFIG_REED_SOLOMON \
-	CONFIG_REED_SOLOMON_DEC8=y \
-	CONFIG_REED_SOLOMON_ENC8=y
-  FILES:= $(LINUX_DIR)/lib/reed_solomon/reed_solomon.ko
-  AUTOLOAD:=$(call AutoLoad,30,reed_solomon,1)
-endef
-
-define KernelPackage/reed-solomon/description
- Kernel module for Reed-Solomon error correction
-endef
-
-$(eval $(call KernelPackage,reed-solomon))
 
 
 define KernelPackage/serial-8250
@@ -915,7 +909,6 @@ $(eval $(call KernelPackage,ikconfig))
 define KernelPackage/zram
   SUBMENU:=$(OTHER_MENU)
   TITLE:=ZRAM
-  DEPENDS:=+kmod-lib-lzo
   KCONFIG:= \
 	CONFIG_ZSMALLOC \
 	CONFIG_ZRAM \
@@ -932,8 +925,35 @@ define KernelPackage/zram/description
  Compressed RAM block device support
 endef
 
-$(eval $(call KernelPackage,zram))
+define KernelPackage/zram/config
+  choice
+    prompt "ZRAM Default compressor"
+    default ZRAM_DEF_COMP_LZORLE
 
+  config ZRAM_DEF_COMP_LZORLE
+            bool "lzo-rle"
+            select PACKAGE_kmod-lib-lzo
+
+  config ZRAM_DEF_COMP_LZO
+            bool "lzo"
+            select PACKAGE_kmod-lib-lzo
+
+  config ZRAM_DEF_COMP_LZ4
+            bool "lz4"
+            select PACKAGE_kmod-lib-lz4
+
+  config ZRAM_DEF_COMP_LZ4HC
+            bool "lz4-hc"
+            select PACKAGE_kmod-lib-lz4hc
+
+  config ZRAM_DEF_COMP_ZSTD
+            bool "zstd"
+            select PACKAGE_kmod-lib-zstd
+
+  endchoice
+endef
+
+$(eval $(call KernelPackage,zram))
 
 define KernelPackage/pps
   SUBMENU:=$(OTHER_MENU)
@@ -1146,7 +1166,8 @@ $(eval $(call KernelPackage,keys-trusted))
 define KernelPackage/tpm
   SUBMENU:=$(OTHER_MENU)
   TITLE:=TPM Hardware Support
-  DEPENDS:= +kmod-random-core
+  DEPENDS:= +kmod-random-core +(LINUX_5_15||LINUX_6_1):kmod-asn1-decoder \
+	  +(LINUX_5_15||LINUX_6_1):kmod-asn1-encoder +(LINUX_5_15||LINUX_6_1):kmod-oid-registry
   KCONFIG:= CONFIG_TCG_TPM
   FILES:= $(LINUX_DIR)/drivers/char/tpm/tpm.ko
   AUTOLOAD:=$(call AutoLoad,10,tpm,1)
@@ -1273,3 +1294,53 @@ define KernelPackage/f71808e-wdt/description
 endef
 
 $(eval $(call KernelPackage,f71808e-wdt))
+
+
+define KernelPackage/qcom-qmi-helpers
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Qualcomm QMI Helpers
+  KCONFIG:=CONFIG_QCOM_QMI_HELPERS
+  FILES:=$(LINUX_DIR)/drivers/soc/qcom/qmi_helpers.ko
+  AUTOLOAD:=$(call AutoProbe,qmi_helpers)
+endef
+
+define KernelPackage/qcom-qmi-helpers/description
+  Qualcomm QMI Helpers
+endef
+
+$(eval $(call KernelPackage,qcom-qmi-helpers))
+
+define KernelPackage/mhi-bus
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=MHI bus
+  DEPENDS:=@(LINUX_5_15||LINUX_6_1)
+  KCONFIG:=CONFIG_MHI_BUS \
+           CONFIG_MHI_BUS_DEBUG=y
+  FILES:= \
+	$(LINUX_DIR)/drivers/bus/mhi/core/mhi.ko@lt5.18 \
+	$(LINUX_DIR)/drivers/bus/mhi/host/mhi.ko@ge5.18
+  AUTOLOAD:=$(call AutoProbe,mhi)
+endef
+
+define KernelPackage/mhi-bus/description
+  Kernel module for the Qualcomm MHI bus.
+endef
+
+$(eval $(call KernelPackage,mhi-bus))
+
+define KernelPackage/mhi-pci-generic
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=MHI PCI controller driver
+  DEPENDS:=@(LINUX_5_15||LINUX_6_1) +kmod-mhi-bus
+  KCONFIG:=CONFIG_MHI_BUS_PCI_GENERIC
+  FILES:= \
+	$(LINUX_DIR)/drivers/bus/mhi/mhi_pci_generic.ko@lt5.18 \
+	$(LINUX_DIR)/drivers/bus/mhi/host/mhi_pci_generic.ko@ge5.18
+  AUTOLOAD:=$(call AutoProbe,mhi_pci_generic)
+endef
+
+define KernelPackage/mhi-pci-generic/description
+  Kernel module for the MHI PCI controller driver.
+endef
+
+$(eval $(call KernelPackage,mhi-pci-generic))

@@ -8,7 +8,7 @@ define Profile/Default
   PRIORITY:=1
 endef
 
-define Profile/Default/Description
+define Profile/Default/description
   Package set compatible with most boards.
 endef
 

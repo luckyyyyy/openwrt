@@ -98,18 +98,15 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&ephy_pins>;
 
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 
 	mediatek,portmap = "llllw";
 };
 
 &wmac {
 	ralink,mtd-eeprom = <&factory 0x0>;
-
-	pinctrl-names = "default", "pa_gpio";
+	pinctrl-names = "default";
 	pinctrl-0 = <&pa_pins>;
-	pinctrl-1 = <&pa_gpio_pins>;
 };
 
 &pcie {
@@ -128,15 +125,5 @@
 	gpio {
 		groups = "wled", "i2c", "uartf", "wdt";
 		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_4: macaddr@4 {
-		reg = <0x4 0x6>;
 	};
 };

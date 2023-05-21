@@ -246,8 +246,7 @@ glinet,gl-x750)
 hak5,lan-turtle)
 	ucidef_set_led_netdev "wan" "WAN" "orange:system" "eth1"
 	;;
-joyit,jt-or750i|\
-yuncore,xd3200)
+joyit,jt-or750i)
 	ucidef_set_led_default "ath10k" "ath10k-disable" "ath10k-phy0" "0"
 	;;
 meraki,mr12|\
@@ -309,9 +308,6 @@ qca,ap143-16m)
 	;;
 qihoo,c301)
 	ucidef_set_led_wlan "wlan" "WLAN" "green:wlan" "phy0tpt"
-	;;
-ruckus,zf7372)
-	ucidef_set_led_switch "lan" "LAN" "green:eth1" "switch0" "0x02"
 	;;
 samsung,wam250)
 	ucidef_set_led_netdev "lan" "LAN" "white:lan" "eth0"
@@ -405,7 +401,10 @@ tplink,tl-mr6400-v1)
 	ucidef_set_led_netdev "wan" "WAN" "white:wan" "eth1"
 	ucidef_set_led_netdev "4g" "4G" "white:4g" "usb0"
 	;;
-tplink,tl-wpa8630-v1)
+tplink,tl-wpa8630-v1|\
+tplink,tl-wpa8630p-v2-int|\
+tplink,tl-wpa8630p-v2.0-eu|\
+tplink,tl-wpa8630p-v2.1-eu)
 	ucidef_set_led_switch "lan" "LAN" "green:lan" "switch0" "0x3c"
 	;;
 tplink,tl-wr841hp-v2|\
@@ -435,11 +434,19 @@ ubnt,powerbeam-5ac-gen2)
 	ucidef_set_led_rssi "rssimediumhigh" "RSSIMEDIUMHIGH" "blue:rssi2" "wlan0" "51" "100"
 	ucidef_set_led_rssi "rssihigh" "RSSIHIGH" "blue:rssi3" "wlan0" "76" "100"
 	;;
+ubnt,bullet-m-ar7240|\
+ubnt,bullet-m-ar7241|\
 ubnt,bullet-m-xw|\
+ubnt,nanobridge-m|\
+ubnt,nanostation-loco-m|\
 ubnt,nanostation-loco-m-xw|\
+ubnt,nanostation-m|\
 ubnt,nanostation-m-xw|\
+ubnt,picostation-m|\
 ubnt,powerbeam-m2-xw|\
-ubnt,powerbeam-m5-xw)
+ubnt,powerbeam-m5-xw|\
+ubnt,powerbridge-m|\
+ubnt,rocket-m)
 	ucidef_set_rssimon "wlan0" "200000" "1"
 	ucidef_set_led_rssi "rssilow" "RSSILOW" "red:link1" "wlan0" "1" "100"
 	ucidef_set_led_rssi "rssimediumlow" "RSSIMEDIUMLOW" "orange:link2" "wlan0" "26" "100"

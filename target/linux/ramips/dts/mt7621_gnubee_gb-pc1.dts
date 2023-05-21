@@ -27,6 +27,16 @@
 	leds {
 		compatible = "gpio-leds";
 
+		ethblack_act {
+			label = "green:ethblack_act";
+			gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
+		};
+
+		ethblue_act {
+			label = "green:ethblue_act";
+			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
+		};
+
 		power {
 			label = "green:power";
 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
@@ -91,20 +101,19 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
 	ports {
 		port@0 {
 			status = "okay";
-			label = "ethblack";
+			label = "lan1";
 		};
 
 		port@4 {
 			status = "okay";
-			label = "ethblue";
+			label = "lan2";
 		};
 	};
 };
@@ -113,15 +122,5 @@
 	gpio {
 		groups = "jtag", "uart3", "wdt";
 		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_e000: macaddr@e000 {
-		reg = <0xe000 0x6>;
 	};
 };

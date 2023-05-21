@@ -10,14 +10,11 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Jonas Gorski <jogo@openwrt.org>
 Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
 ---
- Makefile                          | 10 +++----
  arch/arm/Kconfig                  |  1 +
  arch/arm/boot/compressed/Makefile |  1 +
- arch/arm/kernel/vmlinux.lds.S     | 26 ++++++++--------
- arch/mips/Kconfig                 |  1 +
- arch/mips/kernel/vmlinux.lds.S    |  4 +--
- include/asm-generic/vmlinux.lds.h | 63 ++++++++++++++++++++-------------------
- 7 files changed, 55 insertions(+), 51 deletions(-)
+ arch/arm/kernel/vmlinux.lds.S     | 10 +++++-----
+ arch/arm/kernel/vmlinux.lds.h     | 18 +++++++++---------
+ 4 files changed, 16 insertions(+), 14 deletions(-)
 
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
@@ -81,7 +78,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  
 --- a/arch/arm/kernel/vmlinux.lds.h
 +++ b/arch/arm/kernel/vmlinux.lds.h
-@@ -28,7 +28,7 @@
+@@ -41,7 +41,7 @@
  #define PROC_INFO							\
  		. = ALIGN(4);						\
  		__proc_info_begin = .;					\
@@ -90,7 +87,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  		__proc_info_end = .;
  
  #define HYPERVISOR_TEXT							\
-@@ -39,11 +39,11 @@
+@@ -52,11 +52,11 @@
  #define IDMAP_TEXT							\
  		ALIGN_FUNCTION();					\
  		__idmap_text_start = .;					\
@@ -104,7 +101,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  		__hyp_idmap_text_end = .;
  
  #define ARM_DISCARD							\
-@@ -86,12 +86,12 @@
+@@ -99,12 +99,12 @@
  	. = ALIGN(8);							\
  	.ARM.unwind_idx : {						\
  		__start_unwind_idx = .;					\
@@ -119,20 +116,29 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  		__stop_unwind_tab = .;					\
  	}
  
-@@ -102,14 +102,14 @@
- #define ARM_VECTORS							\
- 	__vectors_start = .;						\
- 	.vectors 0xffff0000 : AT(__vectors_start) {			\
--		*(.vectors)						\
-+		KEEP(*(.vectors))					\
+@@ -116,13 +116,13 @@
+ 	__vectors_lma = .;						\
+ 	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {		\
+ 		.vectors {						\
+-			*(.vectors)					\
++			KEEP(*(.vectors))				\
+ 		}							\
+ 		.vectors.bhb.loop8 {					\
+-			*(.vectors.bhb.loop8)				\
++			KEEP(*(.vectors.bhb.loop8))			\
+ 		}							\
+ 		.vectors.bhb.bpiall {					\
+-			*(.vectors.bhb.bpiall)				\
++			KEEP(*(.vectors.bhb.bpiall))			\
+ 		}							\
  	}								\
- 	. = __vectors_start + SIZEOF(.vectors);				\
- 	__vectors_end = .;						\
+ 	ARM_LMA(__vectors, .vectors);					\
+@@ -134,7 +134,7 @@
  									\
- 	__stubs_start = .;						\
- 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
+ 	__stubs_lma = .;						\
+ 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
 -		*(.stubs)						\
 +		KEEP(*(.stubs))						\
  	}								\
- 	. = __stubs_start + SIZEOF(.stubs);				\
- 	__stubs_end = .;						\
+ 	ARM_LMA(__stubs, .stubs);					\
+ 	. = __stubs_lma + SIZEOF(.stubs);				\

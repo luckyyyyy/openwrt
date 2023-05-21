@@ -30,10 +30,6 @@ ath79_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0@eth0" "4:lan"
 		;;
-	linksys,ea4500-v3)
-		ucidef_add_switch "switch0" \
-			"6@eth1" "1:lan" "2:lan" "3:lan" "4:lan" "5:wan" "0@eth0"
-		;;
 	netgear,r6100)
 		ucidef_set_interface_wan "eth1"
 		ucidef_add_switch "switch0" \
@@ -54,10 +50,6 @@ ath79_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1"
 		;;
-	zte,mf281)
-		ucidef_add_switch "switch0" \
-			"0@eth0" "5:lan"
-		;;
 	zte,mf286|\
 	zte,mf286a|\
 	zte,mf286r)
@@ -65,6 +57,7 @@ ath79_setup_interfaces()
 			"0@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "5:lan:1"
 		;;
 	zyxel,emg2926-q10a|\
+	arris,sbr-ac1750|\
 	zyxel,nbg6716)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:wan" "6@eth1"

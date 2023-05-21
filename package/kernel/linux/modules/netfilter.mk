@@ -120,7 +120,6 @@ endef
 
 $(eval $(call KernelPackage,nf-conntrack6))
 
-
 define KernelPackage/nf-log
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter Logging
@@ -142,7 +141,6 @@ define KernelPackage/nf-log6
 endef
 
 $(eval $(call KernelPackage,nf-log6))
-
 
 define KernelPackage/nf-nat
   SUBMENU:=$(NF_MENU)
@@ -184,7 +182,6 @@ endef
 
 $(eval $(call KernelPackage,nf-flow))
 
-
 define KernelPackage/nf-socket
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter socket lookup support
@@ -205,7 +202,6 @@ define KernelPackage/nf-tproxy
 endef
 
 $(eval $(call KernelPackage,nf-tproxy))
-
 
 define AddDepends/ipt
   SUBMENU:=$(NF_MENU)
@@ -350,7 +346,6 @@ IPSET_MODULES:= \
 	ipset/ip_set_bitmap_ipmac \
 	ipset/ip_set_bitmap_port \
 	ipset/ip_set_hash_ip \
-	ipset/ip_set_hash_ipmac \
 	ipset/ip_set_hash_ipmark \
 	ipset/ip_set_hash_ipport \
 	ipset/ip_set_hash_ipportip \
@@ -588,7 +583,7 @@ define KernelPackage/nf-nathelper-extra
   KCONFIG:=$(KCONFIG_NF_NATHELPER_EXTRA)
   FILES:=$(foreach mod,$(NF_NATHELPER_EXTRA-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_NATHELPER_EXTRA-m)))
-  DEPENDS:=+kmod-nf-nat +kmod-lib-textsearch +kmod-asn1-decoder
+  DEPENDS:=+kmod-nf-nat +kmod-lib-textsearch +kmod-ipt-raw +kmod-asn1-decoder
 endef
 
 define KernelPackage/nf-nathelper-extra/description
@@ -1131,7 +1126,7 @@ define KernelPackage/nft-bridge
   FILES:=$(foreach mod,$(NFT_BRIDGE-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_BRIDGE-m)))
   KCONFIG:= \
-	CONFIG_NF_LOG_BRIDGE=n \
+	CONFIG_NF_LOG_BRIDGE=n@lt5.13 \
 	$(KCONFIG_NFT_BRIDGE)
 endef
 
@@ -1169,6 +1164,17 @@ endef
 
 $(eval $(call KernelPackage,nft-offload))
 
+
+define KernelPackage/nft-nat6
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter nf_tables IPv6-NAT support
+  DEPENDS:=+kmod-nft-nat +kmod-nf-nat6
+  FILES:=$(foreach mod,$(NFT_NAT6-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_NAT6-m)))
+  KCONFIG:=$(KCONFIG_NFT_NAT6)
+endef
+
+$(eval $(call KernelPackage,nft-nat6))
 
 define KernelPackage/nft-netdev
   SUBMENU:=$(NF_MENU)

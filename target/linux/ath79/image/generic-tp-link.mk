@@ -456,18 +456,6 @@ define Device/tplink_eap245-v3
 endef
 TARGET_DEVICES += tplink_eap245-v3
 
-define Device/tplink_deco-m4r-v1
-  $(Device/tplink-safeloader-uimage)
-  SOC := qca9563
-  IMAGE_SIZE := 13824k
-  DEVICE_MODEL := Deco M4R
-  DEVICE_VARIANT := v1
-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
-  SUPPORTED_DEVICES += deco-m4r-v1
-  TPLINK_BOARD_ID := DECO-M4R-V1
-endef
-TARGET_DEVICES += tplink_deco-m4r-v1
-
 define Device/tplink_re350k-v1
   $(Device/tplink-safeloader)
   SOC := qca9558
@@ -651,6 +639,36 @@ define Device/tplink_tl-wpa8630-v1
   SUPPORTED_DEVICES += tl-wpa8630
 endef
 TARGET_DEVICES += tplink_tl-wpa8630-v1
+
+define Device/tplink_tl-wpa8630p-v2
+  $(Device/tplink-safeloader)
+  SOC := qca9563
+  DEVICE_MODEL := TL-WPA8630P
+  IMAGE_SIZE := 6016k
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
+endef
+
+define Device/tplink_tl-wpa8630p-v2-int
+  $(Device/tplink_tl-wpa8630p-v2)
+  DEVICE_VARIANT := v2 (Int.)
+  TPLINK_BOARD_ID := TL-WPA8630P-V2-INT
+endef
+TARGET_DEVICES += tplink_tl-wpa8630p-v2-int
+
+define Device/tplink_tl-wpa8630p-v2.0-eu
+  $(Device/tplink_tl-wpa8630p-v2)
+  DEVICE_VARIANT := v2.0 (EU)
+  TPLINK_BOARD_ID := TL-WPA8630P-V2.0-EU
+  SUPPORTED_DEVICES += tplink,tl-wpa8630p-v2-eu
+endef
+TARGET_DEVICES += tplink_tl-wpa8630p-v2.0-eu
+
+define Device/tplink_tl-wpa8630p-v2.1-eu
+  $(Device/tplink_tl-wpa8630p-v2)
+  DEVICE_VARIANT := v2.1 (EU)
+  TPLINK_BOARD_ID := TL-WPA8630P-V2.1-EU
+endef
+TARGET_DEVICES += tplink_tl-wpa8630p-v2.1-eu
 
 define Device/tplink_tl-wr1043nd-v1
   $(Device/tplink-8m)

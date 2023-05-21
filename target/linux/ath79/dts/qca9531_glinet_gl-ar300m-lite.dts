@@ -7,7 +7,6 @@
 	model = "GL.iNet GL-AR300M-Lite";
 };
 
-
 /delete-node/ &nand_flash;
 
 &nor_firmware {
@@ -28,4 +27,3 @@
 &led_wlan {
 	label = "green:wlan";
 };
-

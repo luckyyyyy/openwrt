@@ -49,7 +49,6 @@
 	status = "okay";
 
 	label = "sfp";
-	phy-mode = "rgmii-rxid";
 	phy-handle = <&ephy7>;
 };
 

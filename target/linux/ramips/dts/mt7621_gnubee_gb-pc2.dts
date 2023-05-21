@@ -27,24 +27,14 @@
 	leds {
 		compatible = "gpio-leds";
 
-		ethblack-green {
-			label = "green:ethblack";
+		ethblack_act {
+			label = "green:ethblack_act";
 			gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
 		};
 
-		ethblue-green {
-			label = "green:ethblue";
+		ethblue_act {
+			label = "green:ethblue_act";
 			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
-		};
-
-		ethyellow-green {
-			label = "green:ethyellow";
-			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
-		};
-
-		ethyellow-orange {
-			label = "orange:ethyellow";
-			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
 		};
 
 		power {
@@ -111,36 +101,19 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "ethyellow";
-	phy-mode = "rgmii-rxid";
-	phy-handle = <&ethphy5>;
-
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy5: ethernet-phy@5 {
-		reg = <5>;
-	};
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
 	ports {
 		port@0 {
 			status = "okay";
-			label = "ethblack";
+			label = "lan1";
 		};
 
 		port@4 {
 			status = "okay";
-			label = "ethblue";
+			label = "lan2";
 		};
 	};
 };
@@ -149,15 +122,5 @@
 	gpio {
 		groups = "jtag", "uart3", "wdt";
 		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_e000: macaddr@e000 {
-		reg = <0xe000 0x6>;
 	};
 };

@@ -111,23 +111,6 @@
 			};
 		};
 	};
-
-	virtual_flash {
-		compatible = "mtd-concat";
-		devices = <&fwconcat0 &fwconcat1>;
-
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			partition@0 {
-				compatible = "denx,uimage";
-				label = "firmware";
-				reg = <0x0 0x0>;
-			};
-		};
-	};
 };
 
 &usb1 {
@@ -205,8 +188,9 @@
 				read-only;
 			};
 
-			fwconcat0: partition@50000 {
-				label = "fwconcat0";
+			partition@50000 {
+				compatible = "denx,uimage";
+				label = "firmware";
 				reg = <0x050000 0x610000>;
 			};
 
@@ -216,9 +200,10 @@
 				read-only;
 			};
 
-			fwconcat1: partition@670000 {
-				label = "fwconcat1";
+			partition@670000 {
+				label = "unknown";
 				reg = <0x670000 0x190000>;
+				read-only;
 			};
 		};
 	};

@@ -9,7 +9,6 @@ dns_redir=已开启
 dns_fallback='tls://1.0.0.1:853, tls://8.8.4.4:853, https://doh.opendns.com/dns-query'
 dns_nameserver='202.101.172.35,202.101.172.47,119.29.29.29'
 secret=123456
-Https='https://vercel.williamchan.me/api/shell-clash?url=https%3A%2F%2Fwmdy.355365.xyz%2Flink%2FB0e6x3npZ2KfhrRF%3Fclash%3D2'
 cpucore=amd64
 clashv=2022.11.25
 Geo_v=20230325

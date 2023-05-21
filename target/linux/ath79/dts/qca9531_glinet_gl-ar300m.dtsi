@@ -37,16 +37,6 @@
 		};
 	};
 
-	gpio-export {
-		compatible = "gpio-export";
-
-		gpio_usb_power {
-			gpio-export,name = "usb_power";
-			gpio-export,output = <1>;
-			gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
-		};
-	};
-
 	leds {
 		compatible = "gpio-leds";
 
@@ -178,14 +168,5 @@
 
 	macaddr_art_0: macaddr@0 {
 		reg = <0x0 0x6>;
-	};
-};
-
-&pinmux {
-	pinctrl-names = "default";
-	pinctrl-0 = <&enable_gpio17>;
-
-	enable_gpio17: pinmux_enable_gpio17 {
-		pinctrl-single,bits = <0x10 0x0000 0xff00>;
 	};
 };

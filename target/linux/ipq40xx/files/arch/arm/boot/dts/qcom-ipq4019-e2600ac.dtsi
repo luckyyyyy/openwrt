@@ -203,6 +203,7 @@
 			function = "mdio";
 			bias-pull-up;
 		};
+
 		mux_2 {
 			pins = "gpio7";
 			function = "mdc";
@@ -233,6 +234,7 @@
 			drive-strength = <12>;
 			bias-disable;
 		};
+
 		pinmux_cs {
 			function = "gpio";
 			pins = "gpio12";
@@ -253,4 +255,14 @@
 
 &usb2_hs_phy {
 	status = "okay";
+};
+
+&wifi0 {
+	status = "okay";
+	qcom,ath10k-calibration-variant = "Qxwlan-E2600AC";
+};
+
+&wifi1 {
+	status = "okay";
+	qcom,ath10k-calibration-variant = "Qxwlan-E2600AC";
 };

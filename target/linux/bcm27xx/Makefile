@@ -11,7 +11,7 @@ BOARDNAME:=Broadcom BCM27xx
 FEATURES:=audio boot-part display ext4 fpu gpio rootfs-part rtc squashfs usb usbgadget
 SUBTARGETS:=bcm2708 bcm2709 bcm2710 bcm2711
 
-KERNEL_PATCHVER=5.10
+KERNEL_PATCHVER:=5.15
 
 define Target/Description
 	Build firmware image for Broadcom BCM27xx SoC devices.
@@ -26,8 +26,7 @@ DEFAULT_PACKAGES += \
 	kmod-usb-hid \
 	kmod-sound-core kmod-sound-arm-bcm2835 \
 	kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1 \
-	partx-utils mkf2fs e2fsprogs \
-	autocore-arm
+	partx-utils mkf2fs e2fsprogs
 
 KERNELNAME:=Image dtbs
 

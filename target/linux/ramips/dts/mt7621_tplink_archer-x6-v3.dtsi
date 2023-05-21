@@ -115,14 +115,9 @@
 
 &state_default {
 	gpio {
-		groups =  "i2c", "rgmii2", "uart2", "uart3", "jtag", "wdt";
+		groups =  "i2c", "uart2", "uart3", "jtag", "wdt";
 		function = "gpio";
 	};
-};
-
-&ethernet {
-	pinctrl-names = "default";
-	pinctrl-0 = <&rgmii1_pins &mdio_pins>;
 };
 
 &pcie {
@@ -134,9 +129,8 @@
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
 		mediatek,mtd-eeprom = <&radio 0x0>;
-		nvmem-cells = <&macaddr_config_8>;
-		nvmem-cell-names = "mac-address";
-		mac-address-increment = <1>;
+		mtd-mac-address = <&config 0x8>;
+		mtd-mac-address-increment = <1>;
 		ieee80211-freq-limit = <2400000 2500000>;
 	};
 };
@@ -146,20 +140,14 @@
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
 		mediatek,mtd-eeprom = <&radio 0x8000>;
-		nvmem-cells = <&macaddr_config_8>;
-		nvmem-cell-names = "mac-address";
-		mac-address-increment = <2>;
+		mtd-mac-address = <&config 0x8>;
+		mtd-mac-address-increment = <2>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
 
-&ethernet {
-	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
-};
-
 &gmac0 {
-	nvmem-cells = <&macaddr_config_8>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&config 0x8>;
 };
 
 &switch0 {
@@ -188,15 +176,5 @@
 			status = "okay";
 			label = "lan4";
 		};
-	};
-};
-
-&config {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_config_8: macaddr@8 {
-		reg = <0x8 0x6>;
 	};
 };
