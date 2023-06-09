@@ -49,10 +49,16 @@ $(eval $(call TestHostCommand,working-g++, \
 		g++ -x c++ -o $(TMP_DIR)/a.out - -lstdc++ && \
 		$(TMP_DIR)/a.out))
 
-$(eval $(call TestHostCommand,ncurses, \
+$(eval $(call RequireCHeader,ncurses.h, \
 	Please install ncurses. (Missing libncurses.so or ncurses.h), \
-	echo 'int main(int argc, char **argv) { initscr(); return 0; }' | \
-		gcc -include ncurses.h -x c -o $(TMP_DIR)/a.out - -lncurses))
+	initscr(), -lncurses))
+
+$(eval $(call SetupHostCommand,git,Please install Git (git-core) >= 1.7.12.2, \
+	git --exec-path | xargs -I % -- grep -q -- --recursive %/git-submodule, \
+	git submodule --help | grep -- --recursive))
+
+$(eval $(call SetupHostCommand,rsync,Please install 'rsync', \
+	rsync --version </dev/null))
 endif # IB
 
 ifeq ($(HOST_OS),Linux)
@@ -142,6 +148,9 @@ $(eval $(call SetupHostCommand,stat,Cannot find a file stat utility, \
 	gstat -c%s $(TOPDIR)/Makefile, \
 	stat -c%s $(TOPDIR)/Makefile))
 
+$(eval $(call SetupHostCommand,gzip,Please install 'gzip', \
+	gzip --version </dev/null))
+
 $(eval $(call SetupHostCommand,unzip,Please install 'unzip', \
 	unzip 2>&1 | grep zipfile, \
 	unzip))
@@ -181,22 +190,33 @@ $(eval $(call SetupHostCommand,python3,Please install Python >= 3.6, \
 
 $(eval $(call TestHostCommand,python3-distutils, \
 	Please install the Python3 distutils module, \
-	$(STAGING_DIR_HOST)/bin/python3 -c 'import distutils'))
+	$(STAGING_DIR_HOST)/bin/python3 -c 'from distutils import util'))
 
-$(eval $(call SetupHostCommand,git,Please install Git (git-core) >= 1.7.12.2, \
-	git --exec-path | xargs -I % -- grep -q -- --recursive %/git-submodule, \
-	git submodule --help | grep -- --recursive))
+$(eval $(call TestHostCommand,python3-stdlib, \
+	Please install the Python3 stdlib module, \
+	$(STAGING_DIR_HOST)/bin/python3 -c 'import ntpath'))
 
 $(eval $(call SetupHostCommand,file,Please install the 'file' package, \
 	file --version 2>&1 | grep file))
-
-$(eval $(call SetupHostCommand,rsync,Please install 'rsync', \
-	rsync --version </dev/null))
 
 $(eval $(call SetupHostCommand,which,Please install 'which', \
 	/usr/bin/which which, \
 	/bin/which which, \
 	which which))
+
+ifeq ($(HOST_OS),Linux)
+  $(eval $(call RequireCHeader,argp.h, \
+	Missing argp.h Please install the argp-standalone package if musl libc))
+
+  $(eval $(call RequireCHeader,fts.h, \
+	Missing fts.h Please install the musl-fts-dev package if musl libc))
+
+  $(eval $(call RequireCHeader,obstack.h, \
+	Missing obstack.h Please install the musl-obstack-dev package if musl libc))
+
+  $(eval $(call RequireCHeader,libintl.h, \
+	Missing libintl.h Please install the musl-libintl package if musl libc))
+endif
 
 $(STAGING_DIR_HOST)/bin/mkhash: $(SCRIPT_DIR)/mkhash.c
 	mkdir -p $(dir $@)
@@ -209,4 +229,4 @@ prereq: $(STAGING_DIR_HOST)/bin/mkhash $(STAGING_DIR_HOST)/bin/xxd
 
 # Install ldconfig stub
 $(eval $(call TestHostCommand,ldconfig-stub,Failed to install stub, \
-	$(LN) /bin/true $(STAGING_DIR_HOST)/bin/ldconfig))
+	$(LN) $(firstword $(wildcard /bin/true /usr/bin/true)) $(STAGING_DIR_HOST)/bin/ldconfig))

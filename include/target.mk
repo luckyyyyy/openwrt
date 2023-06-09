@@ -17,7 +17,7 @@ DEFAULT_PACKAGES:=\
 	fstools \
 	libc \
 	libgcc \
-	libustream-wolfssl \
+	libustream-openssl \
 	logd \
 	mtd \
 	netifd \
@@ -25,16 +25,17 @@ DEFAULT_PACKAGES:=\
 	uci \
 	uclient-fetch \
 	urandom-seed \
-	luci luci-compat wget-ssl curl ca-certificates htop \
-	default-settings luci-app-upnp luci-app-wol luci-app-vlmcsd luci-app-ramfree \
-	luci-app-ddns ddns-scripts-cloudflare ddns-scripts_aliyun ddns-scripts_dnspod \
-	luci-app-timecontrol luci-app-control-timewol luci-app-control-webrestriction luci-app-control-weburl \
 	urngd
 
 ifneq ($(CONFIG_SELINUX),)
 DEFAULT_PACKAGES+=busybox-selinux procd-selinux
 else
 DEFAULT_PACKAGES+=busybox procd
+endif
+
+# include ujail on systems with enough storage
+ifeq ($(CONFIG_SMALL_FLASH),)
+DEFAULT_PACKAGES+=procd-ujail
 endif
 
 # include seccomp ld-preload hooks if kernel supports it
@@ -52,14 +53,12 @@ DEFAULT_PACKAGES.nas:=\
 	mdadm
 # For router targets
 DEFAULT_PACKAGES.router:=\
-	dnsmasq-full \
-	firewall \
-	ip6tables \
-	iptables \
-	odhcp6c \
-	odhcpd-ipv6only \
-	ppp \
-	ppp-mod-pppoe
+	dnsmasq-full firewall iptables ppp ppp-mod-pppoe \
+	block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw kmod-tun \
+	iptables-mod-tproxy iptables-mod-extra ipset ip-full default-settings luci luci-newapi \
+	ddns-scripts_aliyun ddns-scripts_dnspod luci-app-ddns luci-app-upnp luci-app-autoreboot \
+	luci-app-arpbind luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-vlmcsd \
+	luci-app-accesscontrol luci-app-nlbwmon luci-app-turboacc luci-app-wol curl ca-certificates
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -234,6 +233,7 @@ ifeq ($(DUMP),1)
   ifeq ($(ARCH),powerpc)
     CPU_CFLAGS_603e:=-mcpu=603e
     CPU_CFLAGS_8540:=-mcpu=8540
+    CPU_CFLAGS_8548:=-mcpu=8548
     CPU_CFLAGS_405:=-mcpu=405
     CPU_CFLAGS_440:=-mcpu=440
     CPU_CFLAGS_464fp:=-mcpu=464fp
@@ -257,6 +257,10 @@ ifeq ($(DUMP),1)
     CPU_CFLAGS += -matomic
     CPU_CFLAGS_arc700 = -mcpu=arc700
     CPU_CFLAGS_archs = -mcpu=archs
+  endif
+  ifeq ($(ARCH),riscv64)
+    CPU_TYPE ?= riscv64
+    CPU_CFLAGS_riscv64:=-mabi=lp64d -march=rv64imafdc
   endif
   ifneq ($(CPU_TYPE),)
     ifndef CPU_CFLAGS_$(CPU_TYPE)
