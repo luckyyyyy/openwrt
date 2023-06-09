@@ -1,0 +1,24 @@
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  listen: 0.0.0.0:1053
+  nameserver:
+    - 127.0.0.1:53
+  fallback:
+    - https://1.1.1.1/dns-query
+    - https://dns.cloudflare.com/dns-query
+    - https://dns.google/dns-query
+    - tls://1.1.1.1:853
+    - tls://8.8.8.8:853
+  default-nameserver:
+    - 119.28.28.28
+    - 223.5.5.5
+    - 202.101.172.35
+    - 202.101.172.47
+  fake-ip-filter:
+    - "*.lan"
+  fallback-filter:
+    geoip: true
+    geoip-code: CN

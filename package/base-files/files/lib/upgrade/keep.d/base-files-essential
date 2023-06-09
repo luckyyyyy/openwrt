@@ -13,3 +13,4 @@
 /etc/clash/config.yaml
 /etc/clash/mac
 /etc/clash/ui
+/etc/clash/user.yaml
