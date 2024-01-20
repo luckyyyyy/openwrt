@@ -9,8 +9,7 @@
 /etc/shinit
 /etc/sysctl.conf
 /etc/rc.local
-/etc/clash/mark
-/etc/clash/config.yaml
+/etc/clash/configs
 /etc/clash/mac
 /etc/clash/ui
-/etc/clash/user.yaml
+/etc/clash/yamls
